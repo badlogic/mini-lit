@@ -1,0 +1,8 @@
+/* Import the theme (includes base styles, dark mode, and utilities) */
+@import "@mariozechner/mini-lit/styles/themes/default.css";
+
+/* Tell Tailwind to scan mini-lit dist files for classes */
+@source "../node_modules/@mariozechner/mini-lit/dist";
+
+/* Import Tailwind */
+@import "tailwindcss";
