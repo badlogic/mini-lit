@@ -335,6 +335,28 @@ npm run build
 cd example && npm run build
 ```
 
+### Publishing & Deployment
+
+#### Publishing to npm
+
+```bash
+# Build and publish the library to npm
+npm run build
+npm publish --access public
+```
+
+#### Deploying the Documentation Site
+
+```bash
+# Quick sync (when only source files changed)
+./run.sh sync
+
+# Full deploy (when Docker/infrastructure changed)
+./run.sh deploy
+```
+
+The `sync` command builds and syncs files without restarting services, while `deploy` also restarts the Docker containers on the server.
+
 ## Examples
 
 See the `/example` directory for a complete working example with all components, or visit the [live demo](https://minilit.mariozechner.at).

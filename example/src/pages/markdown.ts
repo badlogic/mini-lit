@@ -98,6 +98,32 @@ print(greet("World"))
 | A    |   B    |     C |
 | D    |   E    |     F |`;
 
+      const mathMarkdown = `## Math Equations
+
+Inline math: $E = mc^2$ and $\\sqrt{x^2 + y^2}$
+
+Block equations:
+
+$$
+\\begin{aligned}
+\\nabla \\cdot \\vec{E} &= \\frac{\\rho}{\\epsilon_0} \\\\
+\\nabla \\cdot \\vec{B} &= 0 \\\\
+\\nabla \\times \\vec{E} &= -\\frac{\\partial \\vec{B}}{\\partial t} \\\\
+\\nabla \\times \\vec{B} &= \\mu_0 \\vec{J} + \\mu_0 \\epsilon_0 \\frac{\\partial \\vec{E}}{\\partial t}
+\\end{aligned}
+$$
+
+Quadratic formula:
+$$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$
+
+Matrix:
+$$
+\\begin{pmatrix}
+a & b \\\\
+c & d
+\\end{pmatrix}
+$$`;
+
       const imageMarkdown = `## Images
 
 ![Alt text](https://via.placeholder.com/400x200?text=Sample+Image)
@@ -203,6 +229,39 @@ def greet(name: str) -> str:
 
 <markdown-block
   .content=\${tableMarkdown}
+></markdown-block>`}
+               ></preview-code>
+            </section>
+
+            ${Separator()}
+
+            <!-- Math Equations -->
+            <section class="my-8">
+               <h2 class="text-2xl font-semibold mb-4">Math Equations (KaTeX)</h2>
+
+               <preview-code
+                  .preview=${html` <markdown-block .content=${mathMarkdown}></markdown-block> `}
+                  code=${`const mathMarkdown = \`## Math Equations
+
+Inline math: $E = mc^2$ and $\\\\sqrt{x^2 + y^2}$
+
+Block equations:
+
+$$
+\\\\begin{aligned}
+\\\\nabla \\\\cdot \\\\vec{E} &= \\\\frac{\\\\rho}{\\\\epsilon_0} \\\\\\\\
+\\\\nabla \\\\cdot \\\\vec{B} &= 0 \\\\\\\\
+\\\\nabla \\\\times \\\\vec{E} &= -\\\\frac{\\\\partial \\\\vec{B}}{\\\\partial t} \\\\\\\\
+\\\\nabla \\\\times \\\\vec{B} &= \\\\mu_0 \\\\vec{J} + \\\\mu_0 \\\\epsilon_0 \\\\frac{\\\\partial \\\\vec{E}}{\\\\partial t}
+\\\\end{aligned}
+$$
+
+Quadratic formula:
+$$x = \\\\frac{-b \\\\pm \\\\sqrt{b^2 - 4ac}}{2a}$$
+\`;
+
+<markdown-block
+  .content=\${mathMarkdown}
 ></markdown-block>`}
                ></preview-code>
             </section>
