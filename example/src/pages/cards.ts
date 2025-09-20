@@ -1,30 +1,30 @@
+import {
+   Badge,
+   Button,
+   Card,
+   CardContent,
+   CardDescription,
+   CardFooter,
+   CardHeader,
+   CardTitle,
+   icon,
+   Separator,
+} from "@mariozechner/mini-lit";
 import { html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 import {
-   Card,
-   CardHeader,
-   CardTitle,
-   CardDescription,
-   CardContent,
-   CardFooter,
-   Button,
-   Badge,
-   Separator,
-   icon,
-} from "@mariozechner/mini-lit";
-import {
-   Star,
-   Heart,
-   MessageCircle,
-   Share,
-   Calendar,
-   MapPin,
-   User,
-   Settings,
-   Bell,
-   Shield,
-   CreditCard,
    Activity,
+   Bell,
+   Calendar,
+   CreditCard,
+   Heart,
+   MapPin,
+   MessageCircle,
+   Settings,
+   Share,
+   Shield,
+   Star,
+   User,
 } from "lucide";
 
 @customElement("page-cards")

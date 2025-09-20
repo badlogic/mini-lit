@@ -1,7 +1,7 @@
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import "@mariozechner/mini-lit/dist/PreviewCode.js";
-import { Progress, Button, Separator, Badge } from "@mariozechner/mini-lit";
+import { Badge, Button, Progress, Separator } from "@mariozechner/mini-lit";
 
 @customElement("page-progress")
 export class ProgressPage extends LitElement {

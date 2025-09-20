@@ -1,6 +1,6 @@
+import { SidebarItem, SidebarSection } from "@mariozechner/mini-lit";
 import { Router } from "@vaadin/router";
 import { html } from "lit";
-import { SidebarItem, SidebarSection } from "@mariozechner/mini-lit";
 import "./app.css";
 
 // Import pages

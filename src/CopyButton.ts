@@ -1,9 +1,9 @@
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { i18n } from "./i18n.js";
-import { Button } from "./Button.js";
-import { icon } from "./icons.js";
 import { Check, Copy } from "lucide";
+import { Button } from "./Button.js";
+import { i18n } from "./i18n.js";
+import { icon } from "./icons.js";
 
 @customElement("copy-button")
 export class CopyButton extends LitElement {

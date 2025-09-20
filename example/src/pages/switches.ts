@@ -1,7 +1,7 @@
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import "@mariozechner/mini-lit/dist/PreviewCode.js";
-import { Switch, Label, Card, CardHeader, CardTitle, CardContent } from "@mariozechner/mini-lit";
+import { Card, CardContent, CardHeader, CardTitle, Label, Switch } from "@mariozechner/mini-lit";
 
 @customElement("page-switches")
 export class SwitchesPage extends LitElement {

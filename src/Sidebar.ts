@@ -1,9 +1,9 @@
 import { html, LitElement, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { fc, type BaseComponentProps } from "./mini.js";
-import { icon } from "./icons.js";
 import { Menu, X } from "lucide";
 import { Button } from "./Button.js";
+import { icon } from "./icons.js";
+import { type BaseComponentProps, fc } from "./mini.js";
 
 @customElement("mini-sidebar")
 export class Sidebar extends LitElement {

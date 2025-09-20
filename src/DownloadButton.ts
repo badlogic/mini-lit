@@ -1,8 +1,8 @@
 import { html, type TemplateResult } from "lit";
-import { i18n } from "./i18n.js";
-import { Button, ButtonProps } from "./Button.js";
-import { icon, IconSize } from "./icons.js";
 import { Download } from "lucide";
+import { Button, type ButtonProps } from "./Button.js";
+import { i18n } from "./i18n.js";
+import { type IconSize, icon } from "./icons.js";
 
 export interface DownloadButtonProps {
    content: string | Uint8Array;

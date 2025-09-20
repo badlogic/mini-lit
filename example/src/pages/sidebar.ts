@@ -1,8 +1,7 @@
+import { icon, Separator, SidebarItem, SidebarSection } from "@mariozechner/mini-lit";
 import { html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
-import { SidebarItem, SidebarSection, Separator } from "@mariozechner/mini-lit";
-import { Home, Settings, User, Bell, Package, ShoppingCart, CreditCard } from "lucide";
-import { icon } from "@mariozechner/mini-lit";
+import { Bell, CreditCard, Home, Package, Settings, ShoppingCart, User } from "lucide";
 import "@mariozechner/mini-lit/dist/PreviewCode.js";
 
 @customElement("page-sidebar")

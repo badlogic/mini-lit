@@ -1,13 +1,13 @@
 import hljs from "highlight.js/lib/core";
-import javascript from "highlight.js/lib/languages/javascript";
-import typescript from "highlight.js/lib/languages/typescript";
-import python from "highlight.js/lib/languages/python";
-import html from "highlight.js/lib/languages/xml"; // HTML uses xml
-import css from "highlight.js/lib/languages/css";
-import json from "highlight.js/lib/languages/json";
 import bash from "highlight.js/lib/languages/bash";
+import css from "highlight.js/lib/languages/css";
+import javascript from "highlight.js/lib/languages/javascript";
+import json from "highlight.js/lib/languages/json";
+import python from "highlight.js/lib/languages/python";
 import sql from "highlight.js/lib/languages/sql";
-import { html as litHtml, LitElement } from "lit";
+import typescript from "highlight.js/lib/languages/typescript";
+import html from "highlight.js/lib/languages/xml"; // HTML uses xml
+import { LitElement, html as litHtml } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { i18n } from "./i18n.js";

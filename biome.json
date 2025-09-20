@@ -1,0 +1,30 @@
+{
+   "linter": {
+      "enabled": true,
+      "rules": {
+         "recommended": true,
+         "style": {
+            "noNonNullAssertion": "off",
+            "useConst": "error",
+            "useNodejsImportProtocol": "off",
+            "useTemplate": "off"
+         },
+         "correctness": {
+            "noUnusedVariables": "off"
+         },
+         "suspicious": {
+            "noExplicitAny": "off",
+            "noControlCharactersInRegex": "off",
+            "noEmptyInterface": "off"
+         }
+      }
+   },
+   "formatter": {
+      "enabled": false
+   },
+   "files": {
+      "ignoreUnknown": false,
+      "experimentalScannerIgnores": ["node_modules", "**/*.css", "**/*.scss", "**/*.sass"],
+      "includes": ["src/**/*.{ts}", "example/**/*.{ts}"]
+   }
+}

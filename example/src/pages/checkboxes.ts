@@ -1,17 +1,7 @@
+import { Card, CardContent, CardHeader, CardTitle, Checkbox, Label } from "@mariozechner/mini-lit";
+import "@mariozechner/mini-lit/dist/PreviewCode.js";
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import "@mariozechner/mini-lit/dist/PreviewCode.js";
-import {
-   Checkbox,
-   Label,
-   Card,
-   CardHeader,
-   CardTitle,
-   CardContent,
-   Separator,
-   Button,
-   Badge,
-} from "@mariozechner/mini-lit";
 
 @customElement("page-checkboxes")
 export class CheckboxesPage extends LitElement {

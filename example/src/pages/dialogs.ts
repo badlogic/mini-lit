@@ -1,19 +1,8 @@
+import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, Input, icon, Label } from "@mariozechner/mini-lit";
+import "@mariozechner/mini-lit/dist/PreviewCode.js";
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import {
-   Dialog,
-   DialogHeader,
-   DialogContent,
-   DialogFooter,
-   Button,
-   Input,
-   Label,
-   Separator,
-   Badge,
-   icon,
-} from "@mariozechner/mini-lit";
-import { Settings, Trash2, Save, AlertTriangle, CheckCircle, Info } from "lucide";
-import "@mariozechner/mini-lit/dist/PreviewCode.js";
+import { AlertTriangle, CheckCircle, Info, Save, Settings, Trash2 } from "lucide";
 
 @customElement("page-dialogs")
 export class DialogsPage extends LitElement {
@@ -58,7 +47,9 @@ export class DialogsPage extends LitElement {
                   .preview=${html`
                      <div class="flex items-center justify-center p-8">
                         ${Button({
-                           onClick: () => (this.basicDialogOpen = true),
+                           onClick: () => {
+                              this.basicDialogOpen = true;
+                           },
                            children: "Open Dialog",
                         })}
                      </div>
@@ -116,7 +107,9 @@ export class DialogsPage extends LitElement {
                      <div class="flex items-center justify-center p-8">
                         ${Button({
                            variant: "destructive",
-                           onClick: () => (this.confirmDialogOpen = true),
+                           onClick: () => {
+                              this.confirmDialogOpen = true;
+                           },
                            children: html`${icon(Trash2, "sm")} Delete Item`,
                         })}
                      </div>
@@ -166,7 +159,9 @@ export class DialogsPage extends LitElement {
                   .preview=${html`
                      <div class="flex items-center justify-center p-8">
                         ${Button({
-                           onClick: () => (this.formDialogOpen = true),
+                           onClick: () => {
+                              this.formDialogOpen = true;
+                           },
                            children: html`${icon(Settings, "sm")} Open Form`,
                         })}
                      </div>
@@ -232,7 +227,9 @@ export class DialogsPage extends LitElement {
                      <div class="flex items-center justify-center p-8">
                         ${Button({
                            variant: "outline",
-                           onClick: () => (this.infoDialogOpen = true),
+                           onClick: () => {
+                              this.infoDialogOpen = true;
+                           },
                            children: html`${icon(Info, "sm")} View Info`,
                         })}
                      </div>
@@ -440,7 +437,9 @@ export class DialogsPage extends LitElement {
          <!-- Actual Dialogs (rendered outside preview) -->
          ${Dialog({
             isOpen: this.basicDialogOpen,
-            onClose: () => (this.basicDialogOpen = false),
+            onClose: () => {
+               this.basicDialogOpen = false;
+            },
             children: html`
                ${DialogContent({
                   children: html`
@@ -462,11 +461,15 @@ export class DialogsPage extends LitElement {
                         children: html`
                            ${Button({
                               variant: "outline",
-                              onClick: () => (this.basicDialogOpen = false),
+                              onClick: () => {
+                                 this.basicDialogOpen = false;
+                              },
                               children: "Cancel",
                            })}
                            ${Button({
-                              onClick: () => (this.basicDialogOpen = false),
+                              onClick: () => {
+                                 this.basicDialogOpen = false;
+                              },
                               children: "OK",
                            })}
                         `,
@@ -477,7 +480,9 @@ export class DialogsPage extends LitElement {
          })}
          ${Dialog({
             isOpen: this.confirmDialogOpen,
-            onClose: () => (this.confirmDialogOpen = false),
+            onClose: () => {
+               this.confirmDialogOpen = false;
+            },
             width: "400px",
             children: html`
                ${DialogContent({
@@ -495,7 +500,9 @@ export class DialogsPage extends LitElement {
                         children: html`
                            ${Button({
                               variant: "outline",
-                              onClick: () => (this.confirmDialogOpen = false),
+                              onClick: () => {
+                                 this.confirmDialogOpen = false;
+                              },
                               children: "Cancel",
                            })}
                            ${Button({
@@ -511,7 +518,9 @@ export class DialogsPage extends LitElement {
          })}
          ${Dialog({
             isOpen: this.formDialogOpen,
-            onClose: () => (this.formDialogOpen = false),
+            onClose: () => {
+               this.formDialogOpen = false;
+            },
             children: html`
                ${DialogContent({
                   children: html`
@@ -554,7 +563,9 @@ export class DialogsPage extends LitElement {
                         children: html`
                            ${Button({
                               variant: "outline",
-                              onClick: () => (this.formDialogOpen = false),
+                              onClick: () => {
+                                 this.formDialogOpen = false;
+                              },
                               children: "Cancel",
                            })}
                            ${Button({
@@ -569,7 +580,9 @@ export class DialogsPage extends LitElement {
          })}
          ${Dialog({
             isOpen: this.infoDialogOpen,
-            onClose: () => (this.infoDialogOpen = false),
+            onClose: () => {
+               this.infoDialogOpen = false;
+            },
             width: "450px",
             children: html`
                ${DialogContent({
@@ -590,7 +603,9 @@ export class DialogsPage extends LitElement {
                      </div>
                      ${DialogFooter({
                         children: Button({
-                           onClick: () => (this.infoDialogOpen = false),
+                           onClick: () => {
+                              this.infoDialogOpen = false;
+                           },
                            children: "Done",
                         }),
                      })}

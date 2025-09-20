@@ -1,8 +1,8 @@
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import "@mariozechner/mini-lit/dist/PreviewCode.js";
-import { Input, Button, Separator, icon } from "@mariozechner/mini-lit";
-import { Mail, Lock, User, Search, Phone, DollarSign, Eye, EyeOff, AlertCircle, Check } from "lucide";
+import { Button, Input, icon, Separator } from "@mariozechner/mini-lit";
+import { AlertCircle, Check, DollarSign, Eye, EyeOff, Lock, Mail, Phone, Search, User } from "lucide";
 
 @customElement("page-inputs")
 export class InputsPage extends LitElement {

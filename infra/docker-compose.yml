@@ -1,0 +1,13 @@
+services:
+   web:
+      image: caddy:alpine
+      restart: unless-stopped
+      stop_grace_period: 1s
+      volumes:
+         - ../dist:/srv:ro
+         - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      networks:
+         - internal
+
+networks:
+   internal:

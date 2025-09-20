@@ -1,7 +1,7 @@
+import { icon } from "@mariozechner/mini-lit";
 import { html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
-import { Folder, File, Code, Layout, PanelLeft, PanelRight } from "lucide";
-import { icon } from "@mariozechner/mini-lit";
+import { Code, File, Folder, Layout, PanelLeft, PanelRight } from "lucide";
 import "@mariozechner/mini-lit/dist/PreviewCode.js";
 import "@mariozechner/mini-lit/dist/SplitPanel.js";
 

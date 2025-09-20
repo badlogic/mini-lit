@@ -1,6 +1,6 @@
-import { createElement, type IconNode } from "lucide";
 import { html, type TemplateResult } from "lit";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
+import { createElement, type IconNode } from "lucide";
 
 // Icon size classes
 export type IconSize = "xs" | "sm" | "md" | "lg" | "xl";

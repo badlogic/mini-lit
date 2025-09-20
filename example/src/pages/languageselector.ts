@@ -3,23 +3,21 @@ import { customElement, state } from "lit/decorators.js";
 import "@mariozechner/mini-lit/dist/PreviewCode.js";
 import "@mariozechner/mini-lit/dist/LanguageSelector.js";
 import {
-   Separator,
    Badge,
    Button,
    Card,
+   CardContent,
    CardHeader,
    CardTitle,
-   CardContent,
-   getCurrentLanguage,
-   setLanguage,
    defaultEnglish,
    defaultGerman,
-   setTranslations,
+   getCurrentLanguage,
    i18n,
    type LanguageCode,
    type MiniLitRequiredMessages,
+   Separator,
+   setTranslations,
 } from "@mariozechner/mini-lit";
-import { deflate } from "zlib";
 
 // Extend the i18n interface for this demo
 declare module "@mariozechner/mini-lit" {

@@ -1,7 +1,7 @@
 import { html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 import "@mariozechner/mini-lit/dist/PreviewCode.js";
-import { Alert, AlertTitle, AlertDescription, Separator, icon } from "@mariozechner/mini-lit";
+import { Alert, AlertDescription, AlertTitle, icon, Separator } from "@mariozechner/mini-lit";
 import { AlertTriangle, CheckCircle, Info, XCircle } from "lucide";
 
 @customElement("page-alerts")

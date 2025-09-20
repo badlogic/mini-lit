@@ -1,8 +1,8 @@
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import "@mariozechner/mini-lit/dist/PreviewCode.js";
-import { Textarea, Button, Separator, Badge, icon } from "@mariozechner/mini-lit";
-import { MessageSquare, Save, Copy, RefreshCw, FileText, Edit3, AlertCircle, CheckCircle } from "lucide";
+import { Button, icon, Separator, Textarea } from "@mariozechner/mini-lit";
+import { AlertCircle, Copy, Edit3, FileText, MessageSquare, RefreshCw, Save } from "lucide";
 
 @customElement("page-textareas")
 export class TextareasPage extends LitElement {

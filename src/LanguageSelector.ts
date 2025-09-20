@@ -1,9 +1,9 @@
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { getCurrentLanguage, type LanguageCode, setLanguage } from "./i18n.js";
-import { Button } from "./Button.js";
-import { icon } from "./icons.js";
 import { Globe } from "lucide";
+import { Button } from "./Button.js";
+import { getCurrentLanguage, type LanguageCode, setLanguage } from "./i18n.js";
+import { icon } from "./icons.js";
 
 @customElement("language-selector")
 export class LanguageSelector extends LitElement {

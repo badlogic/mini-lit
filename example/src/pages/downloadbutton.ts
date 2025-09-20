@@ -1,7 +1,7 @@
+import { Button, DownloadButton, Input, icon, Label, Separator, Textarea } from "@mariozechner/mini-lit";
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { Button, Separator, Input, Textarea, Label, Badge, icon, DownloadButton } from "@mariozechner/mini-lit";
-import { Download, FileText, FileJson, Binary, Image, Code } from "lucide";
+import { Binary, Code, Download, FileText, Image } from "lucide";
 
 @customElement("page-downloadbutton")
 export class DownloadButtonPage extends LitElement {

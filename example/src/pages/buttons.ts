@@ -1,26 +1,7 @@
+import { Button, icon, Separator } from "@mariozechner/mini-lit";
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { Button, Separator, icon } from "@mariozechner/mini-lit";
-import {
-   Download,
-   Mail,
-   Plus,
-   Trash2,
-   Edit,
-   Save,
-   Search,
-   Heart,
-   Star,
-   Settings,
-   ArrowRight,
-   ExternalLink,
-   Loader2,
-   ChevronRight,
-   Upload,
-   Share,
-   Copy,
-   Check,
-} from "lucide";
+import { ArrowRight, Copy, Download, Edit, Heart, Mail, Save, Settings, Share, Star, Trash2, Upload } from "lucide";
 
 @customElement("page-buttons")
 export class ButtonsPage extends LitElement {
@@ -349,36 +330,36 @@ import { Mail, ArrowRight, Download, Upload, Trash2, Share } from "lucide";
                            })}
                            ${Button({
                               variant: "outline",
-                              loading: this.loadingStates["save"],
+                              loading: this.loadingStates.save,
                               onClick: () => this.handleClick("save"),
                               children: html`
                                  ${icon(Save, "sm")}
-                                 <span>${this.loadingStates["save"] ? "Saving..." : "Save Changes"}</span>
+                                 <span>${this.loadingStates.save ? "Saving..." : "Save Changes"}</span>
                               `,
                            })}
                            ${Button({
                               variant: "secondary",
-                              loading: this.loadingStates["load"],
+                              loading: this.loadingStates.load,
                               onClick: () => this.handleClick("load"),
-                              children: this.loadingStates["load"] ? "Loading..." : "Load More",
+                              children: this.loadingStates.load ? "Loading..." : "Load More",
                            })}
                         </div>
 
                         <div class="flex flex-wrap gap-4">
                            ${Button({
                               variant: "destructive",
-                              loading: this.loadingStates["delete"],
+                              loading: this.loadingStates.delete,
                               onClick: () => this.handleClick("delete"),
                               children: html`
                                  ${icon(Trash2, "sm")}
-                                 <span>${this.loadingStates["delete"] ? "Deleting..." : "Delete Item"}</span>
+                                 <span>${this.loadingStates.delete ? "Deleting..." : "Delete Item"}</span>
                               `,
                            })}
                            ${Button({
                               variant: "default",
-                              loading: this.loadingStates["submit"],
+                              loading: this.loadingStates.submit,
                               onClick: () => this.handleClick("submit"),
-                              children: this.loadingStates["submit"] ? "Submitting..." : "Submit Form",
+                              children: this.loadingStates.submit ? "Submitting..." : "Submit Form",
                            })}
                         </div>
                      </div>

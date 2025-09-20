@@ -1,8 +1,8 @@
 import { html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 import "@mariozechner/mini-lit/dist/PreviewCode.js";
-import { Badge, Button, Separator, icon } from "@mariozechner/mini-lit";
-import { Check, X, AlertTriangle, Star, Crown, Shield, Zap, Tag, Users } from "lucide";
+import { Badge, Button, icon, Separator } from "@mariozechner/mini-lit";
+import { AlertTriangle, Check, Crown, Shield, Star, Tag, Users, X, Zap } from "lucide";
 
 @customElement("page-badges")
 export class BadgesPage extends LitElement {

@@ -1,7 +1,7 @@
+import { Badge, Input, icon, Label, Separator, Textarea } from "@mariozechner/mini-lit";
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { Separator, Input, Textarea, Label, Badge, icon } from "@mariozechner/mini-lit";
-import { Code, Mail, Key, FileText, Share, Download, Link, Hash, Terminal, Copy } from "lucide";
+import { Code, FileText, Key, Mail, Share, Terminal } from "lucide";
 
 // Register the copy-button custom element
 import "@mariozechner/mini-lit/dist/CopyButton.js";

@@ -1,8 +1,7 @@
+import { Badge, Button, Card, CardContent, CardHeader, CardTitle, icon } from "@mariozechner/mini-lit";
 import { html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
-import "@mariozechner/mini-lit/dist/CodeBlock.js";
-import { Card, CardHeader, CardTitle, CardContent, Badge, Button, Separator, icon } from "@mariozechner/mini-lit";
-import { MousePointer, Layout, Type, MessageSquare, FileText, Settings, Package, Code, Palette } from "lucide";
+import { Code, FileText, Layout, MessageSquare, MousePointer, Package, Palette, Settings, Type } from "lucide";
 
 declare global {
    const __MINI_LIT_VERSION__: string;
@@ -35,7 +34,7 @@ export class HomePage extends LitElement {
                <div class="space-y-6">
                   <div>
                      <h3 class="text-lg font-medium mb-2">1. Installation</h3>
-                     <code-block .code=${"npm install @mariozechner/mini-lit"} language="bash"></code-block>
+                     <code-block .code=${"npm install lit @mariozechner/mini-lit"} language="bash"></code-block>
                   </div>
 
                   <div>
@@ -124,10 +123,8 @@ render(App(), document.body)
                </div>
             </section>
 
-            ${Separator()}
-
             <!-- Component Gallery -->
-            <section class="mt-12 mb-12">
+            <section class="mb-12">
                <h2 class="text-2xl font-semibold mb-6">Components</h2>
 
                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -341,10 +338,8 @@ render(App(), document.body)
                </div>
             </section>
 
-            ${Separator()}
-
             <!-- Features -->
-            <section class="mt-12 mb-12">
+            <section class="mb-12">
                <h2 class="text-2xl font-semibold mb-6">Features</h2>
 
                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -409,8 +404,6 @@ render(App(), document.body)
                </div>
             </section>
 
-            ${Separator()}
-
             <!-- Links -->
             <section class="mb-12">
                <h2 class="text-2xl font-semibold mb-4">Resources</h2>
@@ -446,12 +439,18 @@ render(App(), document.body)
             </section>
 
             <div class="text-center">
-               <p class="text-muted-foreground">
+               <p class="text-muted-foreground text-sm">
                   Built with
-                  ${html`<a href="https://lit.dev" class="text-primary hover:underline" target="_blank">Lit</a>`} and
-                  ${html`<a href="https://tailwindcss.com" class="text-primary hover:underline" target="_blank"
+                  <a href="https://lit.dev" class="text-primary hover:underline" target="_blank">Lit</a> and
+                  <a href="https://tailwindcss.com" class="text-primary hover:underline" target="_blank"
                      >Tailwind CSS v4</a
-                  >`}
+                  >
+               </p>
+               <p class="text-muted-foreground text-sm">
+                  Made with duct tape and spit by
+                  <a class="text-primary hover:underline" href="https://mariozechner.at" target="_blank"
+                     >Mario Zechner</a
+                  >
                </p>
             </div>
          </div>

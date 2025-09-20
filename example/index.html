@@ -3,10 +3,47 @@
    <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>mini-lit Component Gallery</title>
+      <title>mini-lit</title>
+
+      <!-- SEO Meta Tags -->
+      <meta
+         name="description"
+         content="Lightweight Lit components with shadcn-inspired theming, Tailwind CSS v4 styling, and Lucide icons."
+      />
+      <meta
+         name="keywords"
+         content="web components, lit, tailwind css, shadcn, component library, ui components, typescript, lucide icons"
+      />
+      <meta name="author" content="Mario Zechner" />
+
+      <!-- Open Graph / Facebook -->
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://minilit.mariozechner.at/" />
+      <meta property="og:title" content="mini-lit" />
+      <meta
+         property="og:description"
+         content="Lightweight Lit components with shadcn-inspired theming, Tailwind CSS v4 styling, and Lucide icons."
+      />
+      <meta property="og:image" content="https://minilit.mariozechner.at/og-image.png" />
+
+      <!-- Twitter Card -->
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:url" content="https://minilit.mariozechner.at/" />
+      <meta name="twitter:title" content="mini-lit" />
+      <meta
+         name="twitter:description"
+         content="Lightweight Lit components with shadcn-inspired theming, Tailwind CSS v4 styling, and Lucide icons."
+      />
+      <meta name="twitter:image" content="https://minilit.mariozechner.at/og-image.png" />
+      <meta name="twitter:creator" content="@badlogicgames" />
+
+      <!-- Canonical URL -->
+      <link rel="canonical" href="https://minilit.mariozechner.at/" />
    </head>
    <body class="bg-background text-foreground">
-      <theme-toggle class="fixed top-4 right-4 z-50"></theme-toggle>
+      <div class="fixed top-4 right-4 z-50 flex items-center gap-2">
+         <theme-toggle></theme-toggle>
+      </div>
 
       <!-- Sidebar will be added by JavaScript -->
       <mini-sidebar></mini-sidebar>

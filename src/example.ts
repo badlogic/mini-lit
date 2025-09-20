@@ -1,26 +1,26 @@
 import { html, render } from "lit";
+import { CheckCircle, Moon, Send, Settings } from "lucide";
+import { icon } from "./icons.js";
 import {
+   Alert,
+   AlertDescription,
+   AlertTitle,
+   Badge,
    Button,
    Card,
+   CardContent,
+   CardDescription,
+   CardFooter,
    CardHeader,
    CardTitle,
-   CardDescription,
-   CardContent,
-   CardFooter,
-   Input,
-   Badge,
-   Alert,
-   AlertTitle,
-   AlertDescription,
    Checkbox,
-   Switch,
-   Select,
-   Progress,
-   Separator,
    createState,
+   Input,
+   Progress,
+   Select,
+   Separator,
+   Switch,
 } from "./index.js";
-import { icon } from "./icons.js";
-import { Search, Send, Moon, Sun, Settings, CheckCircle } from "lucide";
 import "./ThemeToggle.js";
 import "./CodeBlock.js";
 import "./MarkdownBlock.js";
@@ -339,7 +339,10 @@ const MyComponent = () => html\`
             <div class="space-y-4">
                <h3 class="text-lg font-medium text-muted-foreground">MarkdownBlock Component</h3>
                <markdown-block
-                  .content=${"# Markdown Support\n\nThis component supports **bold text**, *italic text*, and `inline code`.\n\n## Features\n\n- Lists with bullets\n- Code blocks with syntax highlighting\n- Tables support\n- Math equations: $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$\n\n```javascript\n// Code blocks are highlighted\nfunction hello(name) {\n  return `Hello, ${name}!`;\n}\n```\n\n| Feature | Support |\n|---------|---------|\n| Tables  | ✅      |\n| Math    | ✅      |\n| Code    | ✅      |"}
+                  .content=${
+                     // biome-ignore lint/suspicious/noTemplateCurlyInString: dunno
+                     "# Markdown Support\n\nThis component supports **bold text**, *italic text*, and `inline code`.\n\n## Features\n\n- Lists with bullets\n- Code blocks with syntax highlighting\n- Tables support\n- Math equations: $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$\n\n```javascript\n// Code blocks are highlighted\nfunction hello(name) {\n  return `Hello, ${name}!`;\n}\n```\n\n| Feature | Support |\n|---------|---------|\n| Tables  | ✅      |\n| Math    | ✅      |\n| Code    | ✅      |"
+                  }
                ></markdown-block>
             </div>
          </section>

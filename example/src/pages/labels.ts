@@ -1,8 +1,8 @@
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import "@mariozechner/mini-lit/dist/PreviewCode.js";
-import { Label, Input, Textarea, Checkbox, Switch, Separator, Badge, icon } from "@mariozechner/mini-lit";
-import { Asterisk, Info, AlertCircle, CheckCircle, HelpCircle, User, Mail } from "lucide";
+import { Badge, Checkbox, Input, icon, Label, Separator, Switch, Textarea } from "@mariozechner/mini-lit";
+import { AlertCircle, Asterisk, CheckCircle, HelpCircle, Info, Mail, User } from "lucide";
 
 @customElement("page-labels")
 export class LabelsPage extends LitElement {

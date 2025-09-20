@@ -1,8 +1,8 @@
 import { html, LitElement, type TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators.js";
+import { Code, Eye } from "lucide";
 import { i18n } from "./i18n.js";
 import { icon } from "./icons.js";
-import { Code, Eye } from "lucide";
 
 type Mode = "preview" | "code";
 

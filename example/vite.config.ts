@@ -1,5 +1,5 @@
-import { defineConfig } from "vite";
 import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "vite";
 import packageJson from "../package.json";
 
 export default defineConfig({

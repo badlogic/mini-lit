@@ -1,7 +1,7 @@
+import { Badge, Button, icon, Separator } from "@mariozechner/mini-lit";
 import { html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
-import { Separator, Card, CardHeader, CardTitle, CardContent, Button, Badge, icon } from "@mariozechner/mini-lit";
-import { Star, Heart, Share, Bookmark, Calendar, Clock, MapPin, Phone, Mail, Globe } from "lucide";
+import { Bookmark, Calendar, Clock, Globe, Heart, Mail, MapPin, Phone, Share } from "lucide";
 
 @customElement("page-separators")
 export class SeparatorsPage extends LitElement {

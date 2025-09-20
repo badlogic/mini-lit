@@ -1,8 +1,8 @@
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
+import { Monitor, Moon, Sun } from "lucide";
 import { Button } from "./Button.js";
 import { icon } from "./icons.js";
-import { Monitor, Moon, Sun } from "lucide";
 
 type Theme = "light" | "dark" | "system";
 
