@@ -1,7 +1,18 @@
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, icon } from "@mariozechner/mini-lit";
 import { html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
-import { Code, FileText, Layout, MessageSquare, MousePointer, Package, Palette, Settings, Type } from "lucide";
+import {
+   Code,
+   FileText,
+   Layout,
+   MessageSquare,
+   MousePointer,
+   Package,
+   Palette,
+   Settings,
+   Sparkles,
+   Type,
+} from "lucide";
 
 declare global {
    const __MINI_LIT_VERSION__: string;
@@ -16,12 +27,16 @@ export class HomePage extends LitElement {
    render() {
       return html`
          <div class="p-8 max-w-4xl mx-auto">
-            <div class="mb-8">
-               <h1 class="text-4xl font-bold mb-4">mini-lit</h1>
+            <div class="mb-8 text-center">
+               <div class="flex items-center justify-center gap-3 mb-4">
+                  ${icon(Sparkles, "xl", "text-primary")}
+                  <h1 class="text-6xl font-black tracking-tight">mini-lit</h1>
+                  ${icon(Sparkles, "xl", "text-primary")}
+               </div>
                <p class="text-lg text-muted-foreground mb-6">
                   Lightweight Lit components with shadcn-inspired theming, Tailwind CSS v4 styling, and Lucide icons.
                </p>
-               <div class="flex gap-2">
+               <div class="flex gap-2 justify-center">
                   ${Badge({ variant: "default", children: `v${__MINI_LIT_VERSION__}` })}
                   ${Badge({ variant: "secondary", children: "MIT License" })}
                </div>

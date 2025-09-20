@@ -26,6 +26,7 @@ import "./pages/languageselector.js";
 import "./pages/splitpanel.js";
 import "./pages/diff.js";
 import "./pages/sidebar.js";
+import "./pages/og-image.js";
 
 const outlet = document.getElementById("outlet");
 const router = new Router(outlet);
@@ -53,6 +54,7 @@ router.setRoutes([
    { path: "/splitpanel", component: "page-splitpanel" },
    { path: "/diff", component: "page-diff" },
    { path: "/sidebar", component: "page-sidebar" },
+   { path: "/og-image", component: "page-og-image" },
 ]);
 
 // Setup sidebar content
