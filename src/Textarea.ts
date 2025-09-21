@@ -49,13 +49,15 @@ const _Textarea = fc<TextareaProps>(
 
       return html`
          <div class="flex flex-col gap-1.5 ${className}">
-            ${label
-               ? html`
+            ${
+               label
+                  ? html`
                     <label class="text-sm font-medium text-foreground">
                        ${label} ${required ? html`<span class="text-destructive">${i18n("*")}</span>` : ""}
                     </label>
                  `
-               : ""}
+                  : ""
+            }
             <textarea
                id="${id}"
                class="${baseClasses} ${resizeClasses[resize]} ${stateClasses}"

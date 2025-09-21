@@ -287,22 +287,26 @@ export class TextareasPage extends LitElement {
                            })}
                            <div class="flex justify-between items-center mt-2">
                               <span class="text-sm text-muted-foreground">
-                                 ${this.charCountText.length > 200
-                                    ? html`<span class="text-warning"
+                                 ${
+                                    this.charCountText.length > 200
+                                       ? html`<span class="text-warning"
                                          >${this.charCountText.length} / 250 characters</span
                                       >`
-                                    : html`${this.charCountText.length} / 250 characters`}
+                                       : html`${this.charCountText.length} / 250 characters`
+                                 }
                               </span>
-                              ${this.charCountText.length > 0
-                                 ? Button({
-                                      variant: "outline",
-                                      size: "sm",
-                                      onClick: () => {
-                                         this.charCountText = "";
-                                      },
-                                      children: html`${icon(RefreshCw, "xs")} Clear`,
-                                   })
-                                 : ""}
+                              ${
+                                 this.charCountText.length > 0
+                                    ? Button({
+                                         variant: "outline",
+                                         size: "sm",
+                                         onClick: () => {
+                                            this.charCountText = "";
+                                         },
+                                         children: html`${icon(RefreshCw, "xs")} Clear`,
+                                      })
+                                    : ""
+                              }
                            </div>
                         </div>
                      </div>
@@ -356,14 +360,16 @@ import { RefreshCw } from "lucide";
                               this.interactiveText = e.target.value;
                            },
                         })}
-                        ${this.interactiveText
-                           ? html`
+                        ${
+                           this.interactiveText
+                              ? html`
                                 <div class="p-4 border border-border rounded-md bg-muted/30">
                                    <h4 class="text-sm font-medium mb-2">Preview:</h4>
                                    <p class="whitespace-pre-wrap text-sm">${this.interactiveText}</p>
                                 </div>
                              `
-                           : ""}
+                              : ""
+                        }
                      </div>
                   `}
                   code=${`import { Textarea } from "@mariozechner/mini-lit";

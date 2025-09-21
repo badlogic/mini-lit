@@ -51,9 +51,9 @@ export class Sidebar extends LitElement {
       return html`
          <!-- Mobile menu button (only visible on mobile when sidebar is closed) -->
          <div
-            class="${hideOnDesktop} fixed top-4 left-4 z-50 ${this.isOpen
-               ? "opacity-0 pointer-events-none"
-               : "opacity-100"}"
+            class="${hideOnDesktop} fixed top-4 left-4 z-50 ${
+               this.isOpen ? "opacity-0 pointer-events-none" : "opacity-100"
+            }"
          >
             ${Button({
                variant: "outline",

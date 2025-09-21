@@ -131,13 +131,15 @@ export class SelectsPage extends LitElement {
                               },
                            })}
                         </div>
-                        ${this.basicValue
-                           ? html`
+                        ${
+                           this.basicValue
+                              ? html`
                                 <p class="text-sm text-muted-foreground">
                                    Selected: <code class="bg-muted px-1 py-0.5 rounded">${this.basicValue}</code>
                                 </p>
                              `
-                           : ""}
+                              : ""
+                        }
                      </div>
                   `}
                   code=${`import { Select } from "@mariozechner/mini-lit";
@@ -488,13 +490,15 @@ const priorityOptions = [
                               this.groupedValue = value;
                            },
                         })}
-                        ${this.groupedValue
-                           ? html`
+                        ${
+                           this.groupedValue
+                              ? html`
                                 <p class="text-sm text-muted-foreground">
                                    Selected: <code class="bg-muted px-1 py-0.5 rounded">${this.groupedValue}</code>
                                 </p>
                              `
-                           : ""}
+                              : ""
+                        }
                      </div>
                   `}
                   code=${`import { Select, type SelectGroup } from "@mariozechner/mini-lit";
@@ -616,8 +620,9 @@ const groupedOptions: SelectGroup[] = [
                               })}
                            </div>
 
-                           ${this.interactiveValue
-                              ? html`
+                           ${
+                              this.interactiveValue
+                                 ? html`
                                    <div class="p-4 border border-border rounded-lg bg-muted/30">
                                       <h4 class="text-sm font-medium mb-2">Selection Details:</h4>
                                       <div class="space-y-1 text-sm">
@@ -628,25 +633,28 @@ const groupedOptions: SelectGroup[] = [
                                          <p>
                                             Department:
                                             <span class="font-medium">
-                                               ${this.interactiveValue === "eng"
-                                                  ? "Engineering"
-                                                  : this.interactiveValue === "design"
-                                                    ? "Design"
-                                                    : this.interactiveValue === "sales"
-                                                      ? "Sales"
-                                                      : this.interactiveValue === "hr"
-                                                        ? "Human Resources"
-                                                        : "Finance"}
+                                               ${
+                                                  this.interactiveValue === "eng"
+                                                     ? "Engineering"
+                                                     : this.interactiveValue === "design"
+                                                       ? "Design"
+                                                       : this.interactiveValue === "sales"
+                                                         ? "Sales"
+                                                         : this.interactiveValue === "hr"
+                                                           ? "Human Resources"
+                                                           : "Finance"
+                                               }
                                             </span>
                                          </p>
                                       </div>
                                    </div>
                                 `
-                              : html`
+                                 : html`
                                    <div class="p-4 border border-dashed border-border rounded-lg">
                                       <p class="text-sm text-muted-foreground">Select a department to see details</p>
                                    </div>
-                                `}
+                                `
+                           }
                         </div>
                      </div>
                   `}

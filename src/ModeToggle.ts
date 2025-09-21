@@ -32,9 +32,11 @@ export class ModeToggle extends LitElement {
                (mode, index) => html`
                   <button
                      class="px-3 h-full flex items-center text-sm font-medium transition-colors
-								${index === this.selectedIndex
-                        ? "bg-card text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-accent-foreground"}"
+								${
+                           index === this.selectedIndex
+                              ? "bg-card text-foreground shadow-sm"
+                              : "text-muted-foreground hover:text-accent-foreground"
+                        }"
                      @click=${() => this.setMode(index)}
                      title="${mode}"
                   >

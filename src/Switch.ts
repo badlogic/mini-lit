@@ -40,8 +40,9 @@ const _Switch = fc<SwitchProps>(
             >
                <span data-state="${checked ? "checked" : "unchecked"}" class="${thumbClasses}"></span>
             </button>
-            ${label
-               ? html`
+            ${
+               label
+                  ? html`
                     <label
                        for="${switchId}"
                        class="text-sm font-medium leading-none text-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer select-none"
@@ -50,7 +51,8 @@ const _Switch = fc<SwitchProps>(
                        ${label}
                     </label>
                  `
-               : ""}
+                  : ""
+            }
             ${name ? html` <input type="hidden" name="${name}" .value=${checked ? "on" : "off"} /> ` : ""}
          </div>
       `;

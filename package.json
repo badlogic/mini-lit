@@ -27,7 +27,7 @@
       "dev": "npm install && cd example && npm install && cd .. && concurrently -k \"npm run dev:tsc\" \"npm run dev:example\"",
       "dev:tsc": "tsc --watch",
       "dev:example": "cd example && npm run dev",
-      "check": "prettier --write . && biome lint . && tsc --noEmit && cd example && npm run check",
+      "check": "biome check . --write && tsc --noEmit && cd example && npm run check",
       "prepare": "husky"
    },
    "dependencies": {

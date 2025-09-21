@@ -26,18 +26,18 @@ export class PreviewCodeToggle extends LitElement {
       return html`
          <div class="inline-flex items-center h-7 rounded-md overflow-hidden border border-border bg-muted/60">
             <button
-               class="px-2 h-full flex items-center ${isPreview
-                  ? "bg-card text-foreground"
-                  : "text-muted-foreground hover:text-accent-foreground"}"
+               class="px-2 h-full flex items-center ${
+                  isPreview ? "bg-card text-foreground" : "text-muted-foreground hover:text-accent-foreground"
+               }"
                @click=${() => this.setMode("preview")}
                title="${i18n("Preview")}"
             >
                ${icon(Eye, "sm")}
             </button>
             <button
-               class="px-2 h-full flex items-center ${!isPreview
-                  ? "bg-card text-foreground"
-                  : "text-muted-foreground hover:text-accent-foreground"}"
+               class="px-2 h-full flex items-center ${
+                  !isPreview ? "bg-card text-foreground" : "text-muted-foreground hover:text-accent-foreground"
+               }"
                @click=${() => this.setMode("code")}
                title="${i18n("Code")}"
             >

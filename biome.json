@@ -20,11 +20,14 @@
       }
    },
    "formatter": {
-      "enabled": false
+      "enabled": true,
+      "indentStyle": "space",
+      "indentWidth": 3,
+      "lineWidth": 120
    },
    "files": {
       "ignoreUnknown": false,
       "experimentalScannerIgnores": ["node_modules", "**/*.css", "**/*.scss", "**/*.sass"],
-      "includes": ["src/**/*.{ts}", "example/**/*.{ts}"]
+      "includes": ["**/*.ts"]
    }
 }

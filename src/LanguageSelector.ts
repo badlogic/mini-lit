@@ -59,8 +59,9 @@ export class LanguageSelector extends LitElement {
                   <span class="text-xs font-medium">${this.currentLanguage.toUpperCase()}</span>
                `,
             })}
-            ${this.isOpen
-               ? html`
+            ${
+               this.isOpen
+                  ? html`
                     <div
                        class="absolute right-0 mt-1 py-1 bg-popover border border-border rounded-md shadow-lg min-w-[80px] z-50"
                     >
@@ -77,7 +78,8 @@ export class LanguageSelector extends LitElement {
                        )}
                     </div>
                  `
-               : ""}
+                  : ""
+            }
          </div>
       `;
    }

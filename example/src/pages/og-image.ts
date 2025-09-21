@@ -1,22 +1,22 @@
-import { html, LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
 import {
-   Button,
-   Card,
-   CardHeader,
-   CardTitle,
-   CardContent,
-   Badge,
-   Input,
-   Switch,
-   Progress,
    Alert,
    AlertDescription,
-   Select,
-   Label,
+   Badge,
+   Button,
+   Card,
+   CardContent,
+   CardHeader,
+   CardTitle,
+   Input,
    icon,
+   Label,
+   Progress,
+   Select,
+   Switch,
 } from "@mariozechner/mini-lit";
-import { Sparkles, Palette, Package, Code, Zap, Heart, Star, GitBranch } from "lucide";
+import { html, LitElement } from "lit";
+import { customElement } from "lit/decorators.js";
+import { Code, GitBranch, Heart, Package, Palette, Sparkles, Star, Zap } from "lucide";
 
 @customElement("page-og-image")
 export class OgImagePage extends LitElement {

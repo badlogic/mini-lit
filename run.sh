@@ -16,8 +16,8 @@ sync_files() {
       $SERVER:$SERVER_DIR/$DOMAIN/dist/
 
     rsync -avz \
-      infra/ \
-      $SERVER:$SERVER_DIR/$DOMAIN/infra/
+      docker/ \
+      $SERVER:$SERVER_DIR/$DOMAIN/docker/
 
     rsync -avz \
       run.sh \
@@ -43,14 +43,14 @@ build)
     ;;
 prod)
     echo "Starting production server..."
-    docker compose -p $PROJECT -f infra/docker-compose.yml -f infra/docker-compose.prod.yml up -d --build
+    docker compose -p $PROJECT -f docker/docker-compose.yml -f docker/docker-compose.prod.yml up -d --build
     ;;
 stop)
     echo "Stopping services..."
-    docker compose -p $PROJECT -f infra/docker-compose.yml -f infra/docker-compose.prod.yml down
+    docker compose -p $PROJECT -f docker/docker-compose.yml -f docker/docker-compose.prod.yml down
     ;;
 logs)
-    docker compose -p $PROJECT -f infra/docker-compose.yml -f infra/docker-compose.prod.yml logs -f
+    docker compose -p $PROJECT -f docker/docker-compose.yml -f docker/docker-compose.prod.yml logs -f
     ;;
 logs-remote)
     echo "Streaming logs from $DOMAIN..."

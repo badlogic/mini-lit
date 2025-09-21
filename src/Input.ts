@@ -79,19 +79,21 @@ export const Input = fc<InputProps>(
 
       return html`
          <div class="flex flex-col gap-1.5 ${className}">
-            ${label
-               ? html`
+            ${
+               label
+                  ? html`
                     <label class="text-sm font-medium text-foreground">
                        ${label} ${required ? html`<span class="text-destructive">${i18n("*")}</span>` : ""}
                     </label>
                  `
-               : ""}
+                  : ""
+            }
             <input
                id=${id}
                type="${type}"
-               class="${baseClasses} ${sizeClasses[
-                  size
-               ]} ${interactionClasses} ${focusClasses} ${darkClasses} ${stateClasses} ${disabledClasses}"
+               class="${baseClasses} ${
+                  sizeClasses[size]
+               } ${interactionClasses} ${focusClasses} ${darkClasses} ${stateClasses} ${disabledClasses}"
                .value=${value}
                placeholder="${placeholder}"
                ?disabled=${disabled}

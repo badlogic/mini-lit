@@ -55,8 +55,9 @@ const _Checkbox = fc<CheckboxProps>(
                data-state="${checked ? "checked" : "unchecked"}"
                @change=${handleChange}
             />
-            ${label
-               ? html`
+            ${
+               label
+                  ? html`
                     <label
                        for="${checkboxId}"
                        class="text-sm font-medium leading-none text-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer select-none"
@@ -64,7 +65,8 @@ const _Checkbox = fc<CheckboxProps>(
                        ${label}
                     </label>
                  `
-               : ""}
+                  : ""
+            }
          </div>
       `;
    },

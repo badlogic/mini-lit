@@ -66,8 +66,9 @@ export const Button = fc<ButtonProps>(
             @click=${handleClick}
             title="${title || ""}"
          >
-            ${loading
-               ? html`
+            ${
+               loading
+                  ? html`
                     <svg class="animate-spin" fill="none" viewBox="0 0 24 24">
                        <circle
                           class="opacity-25"
@@ -84,7 +85,8 @@ export const Button = fc<ButtonProps>(
                        ></path>
                     </svg>
                  `
-               : ""}
+                  : ""
+            }
             ${children}
          </button>
       `;

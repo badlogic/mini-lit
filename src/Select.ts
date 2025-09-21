@@ -249,17 +249,20 @@ export function Select(props: SelectProps): TemplateResult {
             style="max-height: 300px; overflow-y: auto;"
          >
             <div class="p-1">
-               ${isGrouped
-                  ? (options as SelectGroup[]).map(
-                       (group, _groupIndex) => html`
+               ${
+                  isGrouped
+                     ? (options as SelectGroup[]).map(
+                          (group, _groupIndex) => html`
                           <div role="group">
-                             ${group.label
-                                ? html`
+                             ${
+                                group.label
+                                   ? html`
                                      <div class="text-muted-foreground px-2 py-1.5 text-xs font-medium">
                                         ${group.label}
                                      </div>
                                   `
-                                : ""}
+                                   : ""
+                             }
                              ${group.options.map((option, _optionIndex) => {
                                 const globalIndex = flatOptions.indexOf(option);
                                 const isFocused = globalIndex === state.focusedIndex;
@@ -284,8 +287,9 @@ export function Select(props: SelectProps): TemplateResult {
                                       }}
                                    >
                                       <span class="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
-                                         ${isSelected
-                                            ? html`
+                                         ${
+                                            isSelected
+                                               ? html`
                                                  <svg
                                                     class="h-4 w-4"
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -299,7 +303,8 @@ export function Select(props: SelectProps): TemplateResult {
                                                     <polyline points="20 6 9 17 4 12"></polyline>
                                                  </svg>
                                               `
-                                            : ""}
+                                               : ""
+                                         }
                                       </span>
                                       ${option.icon ? html`<span class="flex-shrink-0">${option.icon}</span>` : ""}
                                       <span>${option.label}</span>
@@ -308,12 +313,12 @@ export function Select(props: SelectProps): TemplateResult {
                              })}
                           </div>
                        `,
-                    )
-                  : (options as SelectOption[]).map((option, index) => {
-                       const isFocused = index === state.focusedIndex;
-                       const isSelected = option.value === value;
+                       )
+                     : (options as SelectOption[]).map((option, index) => {
+                          const isFocused = index === state.focusedIndex;
+                          const isSelected = option.value === value;
 
-                       return html`
+                          return html`
                           <div
                              role="option"
                              aria-selected=${isSelected}
@@ -332,8 +337,9 @@ export function Select(props: SelectProps): TemplateResult {
                              }}
                           >
                              <span class="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
-                                ${isSelected
-                                   ? html`
+                                ${
+                                   isSelected
+                                      ? html`
                                         <svg
                                            class="h-4 w-4"
                                            xmlns="http://www.w3.org/2000/svg"
@@ -347,13 +353,15 @@ export function Select(props: SelectProps): TemplateResult {
                                            <polyline points="20 6 9 17 4 12"></polyline>
                                         </svg>
                                      `
-                                   : ""}
+                                      : ""
+                                }
                              </span>
                              ${option.icon ? html`<span class="flex-shrink-0">${option.icon}</span>` : ""}
                              <span>${option.label}</span>
                           </div>
                        `;
-                    })}
+                       })
+               }
             </div>
          </div>
       `;
