@@ -11,6 +11,7 @@ DOMAIN=minilit.mariozechner.at
 
 sync_files() {
     echo "Syncing files..."
+    ssh -t $SERVER "mkdir -p $SERVER_DIR/$DOMAIN"
     rsync -avz --delete \
       example/dist/ \
       $SERVER:$SERVER_DIR/$DOMAIN/dist/
