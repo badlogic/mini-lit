@@ -108,7 +108,6 @@ const sidebarContent = html`
       title: "Utilities",
       children: html`
          ${SidebarItem({ href: "/languageselector", children: "Language Selector" })}
-         ${SidebarItem({ href: "/i18n", children: "i18n" })}
       `,
    })}
 `;
