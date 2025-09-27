@@ -31,11 +31,12 @@
       "prepare": "husky"
    },
    "dependencies": {
+      "class-variance-authority": "^0.7.1",
+      "diff": "^8.0.2",
       "highlight.js": "^11.11.1",
-      "marked": "^16.3.0",
       "katex": "^0.16.22",
       "lucide": "^0.544.0",
-      "diff": "^8.0.2"
+      "marked": "^16.3.0"
    },
    "peerDependencies": {
       "lit": "^3.3.1"

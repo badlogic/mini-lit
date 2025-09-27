@@ -27,6 +27,8 @@ import "./pages/splitpanel.js";
 import "./pages/diff.js";
 import "./pages/sidebar.js";
 import "./pages/og-image.js";
+// New System Components
+import "./pages/button-cva.js";
 
 const outlet = document.getElementById("outlet");
 const router = new Router(outlet);
@@ -55,6 +57,8 @@ router.setRoutes([
    { path: "/diff", component: "page-diff" },
    { path: "/sidebar", component: "page-sidebar" },
    { path: "/og-image", component: "page-og-image" },
+   // New System Routes
+   { path: "/button-cva", component: "page-button-cva" },
 ]);
 
 // Setup sidebar content
@@ -108,6 +112,12 @@ const sidebarContent = html`
       title: "Utilities",
       children: html`
          ${SidebarItem({ href: "/languageselector", children: "i18n & Language Selector" })}
+      `,
+   })}
+   ${SidebarSection({
+      title: "New System",
+      children: html`
+         ${SidebarItem({ href: "/button-cva", children: "Button (CVA)" })}
       `,
    })}
 `;

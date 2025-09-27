@@ -15,10 +15,14 @@ const sizeClasses: Record<IconSize, string> = {
 
 // Helper to create icon with size class
 export function icon(lucideIcon: IconNode, size: IconSize = "md", className?: string): TemplateResult {
+   return html`${unsafeHTML(iconDOM(lucideIcon, size, className).outerHTML)}`;
+}
+
+export function iconDOM(lucideIcon: IconNode, size: IconSize = "md", className?: string): SVGElement {
    const element = createElement(lucideIcon, {
       class: sizeClasses[size] + (className ? " " + className : ""),
    });
-   return html`${unsafeHTML(element.outerHTML)}`;
+   return element;
 }
 
 // Export the type for users who need it

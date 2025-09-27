@@ -3,12 +3,30 @@
 // Components
 export * from "./Alert.js";
 export * from "./Badge.js";
+export { MiniButton } from "./Button.cva.js";
 export * from "./Button.js";
 export * from "./Card.js";
 export * from "./Checkbox.js";
 // Lit components
 export { CodeBlock } from "./CodeBlock.js";
 export * from "./CopyButton.js";
+// Export component system types and utilities
+export {
+   type ComponentDefinition,
+   ComponentLitBase,
+   type CompoundVariant,
+   createComponent,
+   type ExtractProps,
+   type ExtractPropsForClass,
+   type ExtractRegularProps,
+   type ExtractStyles,
+   type ExtractVariants,
+   getDefaultProps,
+   getDefaultVariants,
+   type PropDef,
+   type RenderFunction,
+   type VariantDef,
+} from "./component.js";
 export * from "./Dialog.js";
 export * from "./Diff.js";
 export * from "./DownloadButton.js";
