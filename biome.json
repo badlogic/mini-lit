@@ -27,7 +27,6 @@
    },
    "files": {
       "ignoreUnknown": false,
-      "experimentalScannerIgnores": ["node_modules", "**/*.css", "**/*.scss", "**/*.sass"],
-      "includes": ["**/*.ts"]
+      "includes": ["src/**/*.ts", "example/**/*.ts", "*.json", "!dist"]
    }
 }

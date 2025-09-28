@@ -1,5 +1,7 @@
-import { html, type TemplateResult } from "lit";
+import { html } from "lit";
+
 import { customElement, property } from "lit/decorators.js";
+import { Loader2 } from "lucide";
 import {
    ComponentLitBase,
    createComponent,
@@ -10,6 +12,7 @@ import {
    renderComponent,
    styleComponent,
 } from "./component.js";
+import { icon } from "./icons.js";
 
 // Step 1: Define the component structure
 export const buttonDefinition = defineComponent({
@@ -47,7 +50,7 @@ export const buttonDefinition = defineComponent({
 
 // Step 2: Define styles - definition passed for type inference only
 export const buttonDefaultStyle = styleComponent(buttonDefinition, {
-   base: "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+   base: "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
    variants: {
       variant: {
          default: "bg-primary text-primary-foreground hover:bg-primary/90",
@@ -88,7 +91,11 @@ export const renderButton = renderComponent(buttonDefinition, (props, variants) 
         ?disabled=${disabled || loading}
         @click=${onClick}
       >
-        ${loading ? html`<span class="mr-2">⏳</span>` : ""}
+        ${
+           loading
+              ? html`<span class="animate-spin">${icon(Loader2, size === "icon" || size === "sm" ? "sm" : "md")}</span>`
+              : ""
+        }
         ${children}
       </button>
     `;

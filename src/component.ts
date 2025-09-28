@@ -64,6 +64,8 @@ type PropDictionary = Record<string, PropDef<any>>;
 
 export type ComponentChild = TemplateResult | string | number | Node | Node[];
 
+type Simplify<T> = { [K in keyof T]: T[K] } & {};
+
 type BasePropDefinitions = {
    className: Extract<PropDef<any>, { type: "classname" }>;
    children: Extract<PropDef<any>, { type: "children" }>;
@@ -82,7 +84,9 @@ const basePropDefinitions: BasePropDefinitions = {
    },
 };
 
-type WithBaseProps<P extends PropDictionary | undefined> = (P extends PropDictionary ? { [K in keyof P]: P[K] } : {}) &
+type WithBaseProps<P extends PropDictionary | undefined> = (P extends PropDictionary
+   ? { [K in keyof P]: P[K] }
+   : Record<string, never>) &
    BasePropDefinitions;
 
 type PropValue<P> = P extends { type: "boolean" }
@@ -138,8 +142,8 @@ export type ExtractVariants<T extends ComponentDefinition> = T["variants"] exten
       ? {
            [K in keyof V]?: V[K] extends { options: readonly (infer O)[] } ? O : never;
         }
-      : {}
-   : {};
+      : Record<string, never>
+   : Record<string, never>;
 
 // Extract prop types from the props field
 type NormalizedPropDefinitions<T extends ComponentDefinition> = WithBaseProps<T["props"]>;
@@ -157,9 +161,27 @@ export type BaseComponentProps = {
 // Extract all props (variants + regular props)
 export type ExtractProps<T extends ComponentDefinition> = ExtractVariants<T> & ExtractRegularProps<T>;
 
+// HTMLElement properties that actually exist and would conflict
+// We only exclude real properties, not all possible HTML attributes
+type ConflictingHTMLElementProps =
+   | "accessKey"
+   | "className"
+   | "contentEditable"
+   | "dir"
+   | "draggable"
+   | "hidden"
+   | "id"
+   | "lang"
+   | "slot"
+   | "spellCheck"
+   | "style"
+   | "tabIndex"
+   | "title"
+   | "translate";
+
 type ClassPropKeys<T extends ComponentDefinition> = Exclude<
    keyof NormalizedPropDefinitions<T>,
-   "children" | "className"
+   "children" | ConflictingHTMLElementProps
 >;
 
 type DefinitionPropValues<T extends ComponentDefinition> = {
@@ -201,8 +223,8 @@ export type ExtractStyles<T extends ComponentDefinition> = {
                  ? Record<O extends string ? O : never, string>
                  : never;
            }
-         : {}
-      : {};
+         : Record<string, never>
+      : Record<string, never>;
    compoundVariants?: CompoundVariant<ExtractStyles<T>>[];
 };
 
@@ -378,9 +400,6 @@ export abstract class ComponentLitBase<T extends ComponentDefinition> extends Li
       if (!this._children && this.childNodes.length > 0) {
          // Store the actual DOM nodes - Lit can handle them directly
          this._children = Array.from(this.childNodes);
-      }
-      if (this._children) {
-         console.log("Has children", this._children);
       }
 
       const props = {} as ExtractProps<T>;

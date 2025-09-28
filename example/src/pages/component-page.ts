@@ -1,7 +1,8 @@
 import type { ComponentDefinition, ExtractProps, VariantDef } from "@mariozechner/mini-lit/dist/component.js";
 import { html, LitElement, render, type TemplateResult } from "lit";
 import "@mariozechner/mini-lit/dist/CodeBlock.js"; // Register code-block
-import { Card } from "@mariozechner/mini-lit";
+import "@mariozechner/mini-lit/dist/Checkbox.cva.js"; // Register mini-checkbox
+import { Card, CardContent, Input, Label, Select } from "@mariozechner/mini-lit";
 
 // Type for getVariantProps return value - maps each variant to base props and option-specific props
 type ExtractVariantOptions<T extends ComponentDefinition> = T["variants"] extends infer V
@@ -286,9 +287,6 @@ export abstract class ComponentPage<T extends ComponentDefinition> extends LitEl
                      ${variant.options.map((option: string) => {
                         // Get the props for this variant
                         const variantPropsGroup = (variantProps as any)[variantKey];
-                        if (option === "icon") {
-                           console.log("Icon variant props group", variantPropsGroup);
-                        }
                         if (!variantPropsGroup) {
                            console.warn(`Missing variant props for ${variantKey}`);
                            return null;
@@ -371,91 +369,121 @@ export abstract class ComponentPage<T extends ComponentDefinition> extends LitEl
 
       return html`
          ${Card({
-            className: "p-0",
+            className: "overflow-hidden",
             children: html`
-               <!-- Preview -->
-               <div class="flex items-center justify-center min-h-[120px] p-8">
-                  <div id="${playgroundId}-result">
-                     <!-- Will be populated by updatePlayground -->
-                  </div>
-               </div>
-
-               <!-- Divider -->
-               <div class="border-t border-border"></div>
-
-               <!-- Controls -->
-               <div class="p-6">
-                  <div class="max-w-sm space-y-4">
-
-                     <!-- Variant Controls -->
-                     ${Object.entries(variants).map(
-                        ([key, variant]: [string, any]) => html`
-                        <div class="py-3 first:pt-0 last:pb-0">
-                           <label class="block text-sm font-medium mb-2 text-muted-foreground">${key}</label>
-                           <select
-                              data-variant="${key}"
-                              class="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                              @change=${() => this.updatePlayground()}
-                           >
-                              ${variant.options.map(
-                                 (opt: string) => html`
-                                 <option value="${opt}" ?selected=${opt === variant.default}>
-                                    ${opt}
-                                 </option>
-                              `,
-                              )}
-                           </select>
+               <!-- Preview Section -->
+               ${CardContent({
+                  className: "p-0",
+                  children: html`
+                     <div class="bg-muted/30 border-b border-border">
+                        <div class="flex items-center justify-center min-h-[140px] p-8">
+                           <div id="${playgroundId}-result">
+                              <!-- Will be populated by updatePlayground -->
+                           </div>
                         </div>
-                     `,
-                     )}
+                     </div>
+                  `,
+               })}
 
-                     <!-- Property Controls -->
-                     ${Object.entries(props).map(([key, prop]: [string, any]) => {
-                        if (prop.type === "boolean") {
-                           return html`
-                              <div class="py-3 first:pt-0 last:pb-0">
-                                 <div class="flex items-center space-x-2">
-                                    <input
-                                       type="checkbox"
-                                       id="prop-${key}"
-                                       data-prop="${key}"
-                                       @change=${() => this.updatePlayground()}
-                                       class="h-4 w-4 rounded border-border text-primary focus:ring-primary"
-                                    />
-                                    <label for="prop-${key}" class="text-sm font-medium">
-                                       ${key}
-                                    </label>
+               <!-- Controls Section -->
+               ${CardContent({
+                  className: "p-6 border-b border-border",
+                  children: html`
+                     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        <!-- Variant Controls -->
+                        ${Object.entries(variants).map(
+                           ([key, variant]: [string, any]) => html`
+                              <div class="space-y-2">
+                                 ${Label({
+                                    children: key,
+                                    className: "text-xs font-medium text-muted-foreground capitalize",
+                                 })}
+                                 <div data-variant="${key}" data-value="${variant.default}">
+                                    ${Select({
+                                       value: variant.default,
+                                       options: variant.options.map((opt: string) => ({
+                                          value: opt,
+                                          label: opt,
+                                       })),
+                                       onChange: (value: string) => {
+                                          // Update the data attribute
+                                          const container = this.querySelector(`[data-variant="${key}"]`);
+                                          if (container) {
+                                             container.setAttribute("data-value", value);
+                                          }
+                                          this.updatePlayground();
+                                       },
+                                       size: "sm",
+                                       className: "w-full",
+                                    })}
                                  </div>
                               </div>
-                           `;
-                        } else if (prop.type === "string" && key !== "children") {
-                           return html`
-                              <div class="py-3 first:pt-0 last:pb-0">
-                                 <label class="block text-sm font-medium mb-2 text-muted-foreground">${key}</label>
-                                 <input
-                                    type="text"
-                                    data-prop="${key}"
-                                    class="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                                    @input=${() => this.updatePlayground()}
-                                    .value=${prop.default || ""}
-                                 />
-                              </div>
-                           `;
-                        }
-                        return "";
-                     })}
-                  </div>
-               </div>
+                           `,
+                        )}
 
-               <!-- Divider -->
-               <div class="border-t border-border"></div>
+                        <!-- Property Controls -->
+                        ${Object.entries(props).map(([key, prop]: [string, any]) => {
+                           if (prop.type === "boolean") {
+                              return html`
+                                 <div class="flex items-center space-x-2" data-prop="${key}" data-checked="false">
+                                    <mini-checkbox
+                                       label="${key}"
+                                       size="sm"
+                                       @change=${(e: Event) => {
+                                          const checkbox = e.target as HTMLInputElement;
+                                          const container = this.querySelector(`[data-prop="${key}"]`);
+                                          if (container) {
+                                             container.setAttribute("data-checked", String(checkbox.checked));
+                                          }
+                                          this.updatePlayground();
+                                       }}
+                                    ></mini-checkbox>
+                                 </div>
+                              `;
+                           } else if (prop.type === "string" && key !== "children") {
+                              return html`
+                                 <div class="space-y-2">
+                                    ${Label({
+                                       children: key,
+                                       className: "text-xs font-medium text-muted-foreground capitalize",
+                                    })}
+                                    <div data-prop="${key}" data-value="${prop.default || ""}">
+                                       ${Input({
+                                          type: "text",
+                                          value: prop.default || "",
+                                          size: "sm",
+                                          placeholder: `Enter ${key}...`,
+                                          onInput: (e: Event) => {
+                                             const value = (e.target as HTMLInputElement).value;
+                                             const container = this.querySelector(`[data-prop="${key}"]`);
+                                             if (container) {
+                                                container.setAttribute("data-value", value);
+                                             }
+                                             this.updatePlayground();
+                                          },
+                                       })}
+                                    </div>
+                                 </div>
+                              `;
+                           }
+                           return "";
+                        })}
+                     </div>
+                  `,
+               })}
 
-               <!-- Generated Code -->
-               <div class="p-6">
-                  <div id="${playgroundId}-code">
-                     <!-- Will be populated by updatePlayground -->
-                  </div>
-               </div>
+               <!-- Generated Code Section -->
+               ${CardContent({
+                  className: "p-6 bg-muted/10",
+                  children: html`
+                     <div class="space-y-3">
+                        <h3 class="text-sm font-medium text-muted-foreground">Generated Code</h3>
+                        <div id="${playgroundId}-code" class="space-y-4">
+                           <!-- Will be populated by updatePlayground -->
+                        </div>
+                     </div>
+                  `,
+               })}
             `,
          })}
       `;
@@ -476,17 +504,25 @@ export abstract class ComponentPage<T extends ComponentDefinition> extends LitEl
       const settings: any = {};
 
       // Get variant selections
-      this.querySelectorAll("[data-variant]").forEach((select: any) => {
-         settings[select.dataset.variant] = select.value;
+      this.querySelectorAll("[data-variant]").forEach((element: any) => {
+         const variantName = element.dataset.variant;
+         const value = element.dataset.value || element.querySelector("select")?.value;
+         if (variantName && value) {
+            settings[variantName] = value;
+         }
       });
 
       // Get prop values
-      this.querySelectorAll("[data-prop]").forEach((input: any) => {
-         const key = input.dataset.prop;
-         if (input.type === "checkbox") {
-            if (input.checked) settings[key] = true;
-         } else if (input.value) {
-            settings[key] = input.value;
+      this.querySelectorAll("[data-prop]").forEach((element: any) => {
+         const propName = element.dataset.prop;
+         if (element.dataset.checked !== undefined) {
+            // Boolean prop
+            if (element.dataset.checked === "true") {
+               settings[propName] = true;
+            }
+         } else if (element.dataset.value) {
+            // String prop
+            settings[propName] = element.dataset.value;
          }
       });
 

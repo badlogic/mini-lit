@@ -47,6 +47,7 @@
       "concurrently": "^9.2.1",
       "husky": "^9.1.7",
       "prettier": "^3.6.2",
+      "string-dedent": "^3.0.2",
       "tsx": "^4.20.5",
       "typescript": "^5.9.2"
    }

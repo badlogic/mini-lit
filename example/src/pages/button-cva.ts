@@ -1,9 +1,11 @@
-import { Button, icon, iconDOM } from "@mariozechner/mini-lit";
-import { ButtonProps, buttonDefaultStyle, buttonDefinition } from "@mariozechner/mini-lit/dist/Button.cva.js";
+import { icon } from "@mariozechner/mini-lit";
+import { Button, buttonDefaultStyle, buttonDefinition } from "@mariozechner/mini-lit/dist/Button.cva.js";
 import { html, type TemplateResult } from "lit";
 import { customElement } from "lit/decorators.js";
+import { until } from "lit/directives/until.js";
 import "@mariozechner/mini-lit/dist/Button.cva.js"; // Registers mini-button
-import { ThumbsUp } from "lucide";
+import { Delete, Download, Rocket, Settings, ThumbsUp } from "lucide";
+import { createComponentExamples, renderExample } from "../example-utils.js";
 import { ComponentPage } from "./component-page.js";
 
 @customElement("page-button-cva")
@@ -48,99 +50,99 @@ export class ButtonCvaPage extends ComponentPage<typeof buttonDefinition> {
    renderCustomUsage(): TemplateResult {
       return html`
          <div class="grid gap-6 md:grid-cols-2">
-            <!-- Functional Component -->
-            <div class="p-6">
-               <h3 class="font-semibold mb-4 text-foreground">Functional Component</h3>
-               <code-block
-                  code="import { Button } from &quot;@mariozechner/mini-lit&quot;;
-
-Button({
-  variant: &quot;default&quot;,
-  size: &quot;md&quot;,
-  onClick: handleClick,
-  children: &quot;Click Me&quot;
-})"
-                  language="typescript"
-               ></code-block>
-               <div class="flex gap-2">
-                  ${Button({
-                     variant: "default",
-                     children: "Functional Example",
-                     onClick: () => alert("Functional button clicked!"),
-                  })}
-                  ${Button({
-                     variant: "outline",
-                     size: "sm",
-                     children: "Small Outline",
-                  })}
-               </div>
-            </div>
-
-            <!-- Web Component -->
-            <div class="p-6">
-               <h3 class="font-semibold mb-4 text-foreground">Web Component</h3>
-               <code-block
-                  code="import &quot;@mariozechner/mini-lit/dist/Button.cva.js&quot;;
-
-&lt;mini-button
-  variant=&quot;default&quot;
-  size=&quot;md&quot;
-  @click=\${handleClick}
-&gt;
-  Click Me
-&lt;/mini-button&gt;"
-                  language="html"
-               ></code-block>
-               <div class="flex gap-2">
-                  <mini-button
-                     variant="default"
-                     @click=${() => alert("Web component clicked!")}
-                  >
-                     Web Component Example
-                  </mini-button>
-                  <mini-button variant="outline" size="sm">
-                     Small Outline
-                  </mini-button>
-               </div>
-            </div>
-
-            <!-- Icon Examples -->
-            <div class="p-6">
-               <h3 class="font-semibold mb-4 text-foreground">With Icons</h3>
-               <div class="space-y-3">
+            ${until(
+               createComponentExamples(
+                  // Functional example
+                  () => html`
                   <div class="flex gap-2">
-                     <mini-button variant="default">
-                        <span>🚀</span> Launch
-                     </mini-button>
-                     <mini-button variant="destructive">
-                        <span>🗑️</span> Delete
-                     </mini-button>
+                     ${Button({
+                        variant: "default",
+                        children: "Functional Example",
+                        onClick: () => alert("Functional button clicked!"),
+                     })}
+                     ${Button({
+                        variant: "outline",
+                        size: "sm",
+                        children: "Small Outline",
+                     })}
                   </div>
+               `,
+                  // Web component example
+                  () => html`
                   <div class="flex gap-2">
+                     <mini-button
+                        variant="default"
+                        @click=${() => alert("Web component clicked!")}
+                     >
+                        Web Component Example
+                     </mini-button>
                      <mini-button variant="outline" size="sm">
-                        <span>⬇️</span> Download
-                     </mini-button>
-                     <mini-button variant="ghost" size="icon">
-                        ⚙️
+                        Small Outline
                      </mini-button>
                   </div>
-               </div>
-            </div>
+               `,
+                  // Functional imports
+                  `import { Button } from "@mariozechner/mini-lit";`,
+                  // Web component imports
+                  `import "@mariozechner/mini-lit/dist/Button.cva.js";`,
+               ),
+               html`<div>Loading...</div>`,
+            )}
 
-            <!-- State Examples -->
-            <div class="p-6">
-               <h3 class="font-semibold mb-4 text-foreground">States</h3>
-               <div class="space-y-3">
-                  <div class="flex gap-2">
-                     <mini-button disabled>Disabled</mini-button>
-                     <mini-button loading>Loading</mini-button>
-                     <mini-button loading disabled>Both</mini-button>
-                  </div>
-                  <p class="text-sm text-muted-foreground mt-3">
-                     Loading state automatically disables interaction
-                  </p>
-               </div>
-            </div>
+            ${until(
+               renderExample(
+                  "Icons, States & Mixed Usage",
+                  () => html`
+                     <div class="space-y-4">
+                        <div>
+                           <h4 class="text-sm font-medium text-muted-foreground mb-2">With Icons</h4>
+                           <div class="flex gap-2">
+                              ${Button({
+                                 variant: "default",
+                                 className: "gap-2",
+                                 children: html`${icon(Rocket, "sm")} Launch`,
+                              })}
+                              <mini-button variant="destructive" class="gap-2">
+                                 Delete ${icon(Delete, "sm")}
+                              </mini-button>
+                              ${Button({
+                                 variant: "ghost",
+                                 size: "icon",
+                                 children: icon(Settings, "sm"),
+                              })}
+                              <mini-button variant="secondary" size="icon">
+                                 ${icon(ThumbsUp, "sm")}
+                              </mini-button>
+                           </div>
+                        </div>
+
+                        <div>
+                           <h4 class="text-sm font-medium text-muted-foreground mb-2">States</h4>
+                           <div class="flex gap-2">
+                              ${Button({ disabled: true, children: "Disabled" })}
+                              <mini-button loading>Loading</mini-button>
+                              ${Button({
+                                 variant: "outline",
+                                 disabled: true,
+                                 className: "gap-2",
+                                 children: html`${icon(Download, "sm")} Disabled`,
+                              })}
+                              <mini-button variant="destructive" loading class="gap-2">
+                                 ${icon(Delete, "sm")} Processing
+                              </mini-button>
+                           </div>
+                           <p class="text-xs text-muted-foreground mt-2">
+                              Mix functional and web components freely. Loading state auto-disables.
+                           </p>
+                        </div>
+                     </div>
+                  `,
+                  `import { Button, icon } from "@mariozechner/mini-lit/dist/Button.cva.js";
+import "@mariozechner/mini-lit/dist/Button.cva.js"; // Registers <mini-button>
+import { Rocket, Delete, Download, Settings, ThumbsUp } from "lucide";`,
+               ),
+               html`<div>Loading...</div>`,
+            )}
          </div>
       `;
    }
