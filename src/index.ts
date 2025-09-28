@@ -14,8 +14,9 @@ export * from "./CopyButton.js";
 export {
    type ComponentDefinition,
    ComponentLitBase,
-   type CompoundVariant,
+   type ComponentStyles,
    createComponent,
+   defineComponent,
    type ExtractProps,
    type ExtractPropsForClass,
    type ExtractRegularProps,
@@ -25,6 +26,10 @@ export {
    getDefaultVariants,
    type PropDef,
    type RenderFunction,
+   renderComponent,
+   type SimpleStyles,
+   type SlotStyles,
+   styleComponent,
    type VariantDef,
 } from "./component.js";
 export * from "./Dialog.js";

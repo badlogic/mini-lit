@@ -1,373 +1,166 @@
 # Tailwind Variants Integration for Mini-Lit
 
+## Current Status: MOSTLY IMPLEMENTED
+
+### What's Working
+1. ✅ **Tailwind Variants installed and integrated** - Replaced CVA with TV
+2. ✅ **Single-element components** - Button works perfectly with className function
+3. ✅ **Multi-element components with slots** - Checkbox uses slots system
+4. ✅ **Auto-generation of slot className props** - Props like `inputClassName`, `labelClassName` are auto-generated
+5. ✅ **Type inference for render functions** - `renderComponent` correctly infers whether component uses slots or not
+6. ✅ **Runtime slot className application** - The slot functions properly apply user-provided className overrides
+
+### What's Broken
+1. ❌ **Class component type safety** - `ExtractPropsForClass` creates type conflicts with index signatures
+2. ❌ **Type complexity** - The type system has become too complex with the auto-generated props
+
 ## The Problem
 
-### Current Limitations
-Our current CVA-based component system has a fundamental limitation: **one component = one style string**. This works for simple components like Button, but fails for compound components like Checkbox that have multiple styleable elements.
+### Original Problem (SOLVED)
+Our CVA-based component system had a fundamental limitation: **one component = one style string**. This is now solved with Tailwind Variants slots.
 
-**Example of the problem:**
+### Current Problem
+The type system is struggling with the auto-generated slot className props. When we define a component with slots:
+
 ```typescript
-// In Checkbox.cva.ts, we have hardcoded styles in the render function:
-const inputClasses = `peer ${sizeClasses[size || "md"]} shrink-0 rounded-sm border ${variantClasses[variant || "default"]}...`;
-const labelClasses = `${labelSizeClasses[size || "md"]} font-medium leading-none...`;
-
-// Users can only customize the container via className:
-Checkbox({ className: "p-4" }) // Only affects container, not input or label!
+export const checkboxDefinition = defineComponent({
+   tag: "mini-checkbox",
+   slots: ["base", "input", "label", "icon"] as const,
+   // ...
+});
 ```
 
-### Files to Read for Context
+The `defineComponent` function auto-generates props like `inputClassName`, `labelClassName`, etc. at runtime. We've made TypeScript aware of these through type manipulation:
 
-1. **`src/component.ts`** - Core component system
-   - `defineComponent()` - Creates component definitions with variants/props
-   - `styleComponent()` - Creates CVA-based styles
-   - `renderComponent()` - Creates render functions that receive (props, variants)
-   - `createComponent()` - Combines definition, styles, and render into a component
+```typescript
+type SlotClassNameProps<T extends ComponentDefinition> = T["slots"] extends readonly string[]
+   ? {
+        [K in T["slots"][number] as K extends "base" ? never : `${K}ClassName`]: {
+           type: "classname";
+           default: undefined;
+           description: string;
+        };
+     }
+   : Record<string, never>;
+```
 
-2. **`src/Button.cva.ts`** - Example of working single-element component
-   - Shows the pattern: definition → styles → render → create
+But when we try to enforce that class components implement all required props via `implements ExtractPropsForClass<...>`, TypeScript complains about missing index signatures.
 
-3. **`src/Checkbox.cva.ts`** - Example of the problem
-   - Lines 105-133: Hardcoded styles in render function
-   - Can't customize input or label styles
+## Current Architecture
 
-4. **`src/mini.ts`** - The `fc` function for creating functional components
-
-### Current Architecture Flow
+### Component Definition Flow
 ```
 defineComponent() → styleComponent() → renderComponent() → createComponent()
      ↓                    ↓                   ↓                    ↓
- Definition          CVA styles        Render function      Final component
-                    (single string)    (props, variants)
+ Definition +         TV styles        Render function      Final component
+ Auto-generated      (with/without    (gets className
+ slot props            slots)          or slots object)
 ```
 
-The `variants` parameter in render is a single function that returns one class string.
+### Key Files and Their Roles
 
-## The Solution: Tailwind Variants for Everything
+1. **`src/component.ts`** - Core component system
+   - `ComponentDefinition` type now includes `slots?: readonly string[]`
+   - `defineComponent()` - Auto-generates slot className props when slots are defined
+   - `styleComponent()` - Overloaded for SimpleStyles and SlotStyles
+   - `renderComponent()` - Takes definition, styles, and render function to infer correct signature
+   - `createComponent()` - Uses type guard `hasSlots()` to determine runtime behavior
 
-### Why Tailwind Variants?
-- **Handles both single and multi-element components** - Works with or without slots
-- **Full CVA replacement** - More features, same mental model
-- **Type-safe** - Full TypeScript support with compile-time checking
-- **Proven pattern** - Used by NextUI, many other libraries
+2. **`src/Button.cva.ts`** - Single-element component example
+   - No slots defined
+   - Receives `className` function in render
+   - Works perfectly
 
-### Key Insight: TV Already Handles Both Cases!
+3. **`src/Checkbox.cva.ts`** - Multi-element component with slots
+   - Defines `slots: ["base", "input", "label", "icon"]`
+   - Receives `slots` object in render with functions for each slot
+   - Auto-generated props work at runtime but cause type issues
 
+### How Slots Work
+
+1. **Definition declares slots**:
 ```typescript
-// TV without slots → returns a string
-const buttonStyles = tv({ base: "...", variants: {...} });
-buttonStyles({ size: "sm" }) // → "base-classes size-sm-classes"
-
-// TV with slots → returns slots object
-const checkboxStyles = tv({ slots: {...}, variants: {...} });
-checkboxStyles({ size: "sm" }) // → { base: () => "...", input: () => "...", label: () => "..." }
-```
-
-### Proposed Architecture Changes
-
-#### 1. Two style types with overloaded `styleComponent()`
-```typescript
-// For single-element components (Button)
-type SimpleStyles<T extends ComponentDefinition> = {
-  base?: string;
-  variants: MappedVariants<T>;  // Derived from T's variant definitions
-  defaultVariants?: DefaultVariants<T>;
-  compoundVariants?: CompoundVariants<T>[];
-};
-
-// For multi-element components (Checkbox)
-type SlotStyles<T extends ComponentDefinition, Slots extends Record<string, string>> = {
-  slots: Slots;
-  variants: MappedSlotVariants<T, Slots>;  // Variants can affect any slot
-  defaultVariants?: DefaultVariants<T>;
-  compoundVariants?: CompoundSlotVariants<T, Slots>[];
-};
-
-// Overloaded styleComponent for compile-time type checking
-export function styleComponent<T extends ComponentDefinition>(
-  definition: T,
-  styles: SimpleStyles<T>
-): SimpleStyles<T>;
-
-export function styleComponent<T extends ComponentDefinition, S extends Record<string, string>>(
-  definition: T,
-  styles: SlotStyles<T, S>
-): SlotStyles<T, S>;
-
-export function styleComponent(definition: any, styles: any) {
-  // Just return styles - the type checking happens at compile time!
-  return styles;
-}
-```
-
-#### 2. Conditional render function signature based on style type
-```typescript
-// The render function signature changes based on whether slots exist
-type RenderFunction<Props, Styles> =
-  Styles extends { slots: any }
-    ? (props: Props, slots: TVSlotResult<Styles>) => TemplateResult
-    : (props: Props, className: (overrides?: ClassValue) => string) => TemplateResult;
-
-// For Button (no slots): receives a className function
-(props, className) => html`<button class=${className()}>${props.children}</button>`
-
-// For Checkbox (slots): receives slots object
-(props, slots) => html`
-  <div class=${slots.base()}>
-    <input class=${slots.input()} />
-    <label class=${slots.label()}>${props.label}</label>
-  </div>
-`
-```
-
-#### 3. Smart `createComponent()` that preserves type safety
-```typescript
-export function createComponent<T extends ComponentDefinition, S>(
-  definition: T,
-  styles: S,  // S carries the information about slots or no slots
-  render: RenderFunction<ExtractProps<T>, S>
-) {
-  const tvInstance = tv(styles as any);
-
-  return fc<ExtractProps<T>>((props) => {
-    if ('slots' in styles) {
-      // Multi-element: pass slots object
-      const slots = tvInstance(extractVariantProps(props));
-      return render(props, slots);
-    } else {
-      // Single element: pass className function
-      const className = (overrides?: ClassValue) =>
-        tvInstance({ ...extractVariantProps(props), class: overrides });
-      return render(props, className);
-    }
-  });
-}
-```
-
-#### 4. Auto-generate slot className props
-When a component uses slots, automatically add props:
-- `className` → base slot
-- `[slotName]ClassName` → that slot
-
-```typescript
-// If slots: { base, input, label } detected
-// Auto-add to props:
-{
-  className: { type: "string", slot: "base" },
-  inputClassName: { type: "string", slot: "input" },
-  labelClassName: { type: "string", slot: "label" }
-}
-```
-
-### Complete Implementation Examples
-
-#### Button.cva.ts - Single Element Component
-```typescript
-import { tv } from "tailwind-variants";  // Using TV for everything now!
-
-// Step 1: Define component
-export const buttonDefinition = defineComponent({
-  tag: "mini-button",
-  variants: {
-    variant: {
-      options: ["default", "destructive", "outline", "secondary", "ghost", "link"] as const,
-      default: "default",
-    },
-    size: {
-      options: ["default", "sm", "lg", "icon"] as const,
-      default: "default",
-    },
-  },
-  props: {
-    disabled: { type: "boolean", default: false },
-    loading: { type: "boolean", default: false },
-    onClick: { type: "function", default: undefined },
-  },
+const checkboxDefinition = defineComponent({
+   slots: ["base", "input", "label", "icon"] as const,
+   // ...
 });
-
-// Step 2: Define styles (no slots = simple component)
-export const buttonStyles = styleComponent(buttonDefinition, {
-  base: "inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50",
-  variants: {
-    variant: {
-      default: "bg-primary text-primary-foreground hover:bg-primary/90",
-      destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-      outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-      secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-      ghost: "hover:bg-accent hover:text-accent-foreground",
-      link: "text-primary underline-offset-4 hover:underline",
-    },
-    size: {
-      default: "h-10 px-4 py-2",
-      sm: "h-9 rounded-md px-3",
-      lg: "h-11 rounded-md px-8",
-      icon: "h-10 w-10",
-    },
-  },
-});
-
-// Step 3: Render function receives className function (not slots!)
-export const renderButton = renderComponent(buttonDefinition, (props, className) => {
-  const { disabled, loading, onClick, children, className: userClassName } = props;
-
-  return html`
-    <button
-      class=${className(userClassName)}  // Pass user's className as override
-      ?disabled=${disabled || loading}
-      @click=${onClick}
-    >
-      ${loading ? html`<span class="animate-spin">${loadingIcon}</span>` : ""}
-      ${children}
-    </button>
-  `;
-});
-
-// Step 4: Create component
-export const Button = createComponent(buttonDefinition, buttonStyles, renderButton);
-
-// Usage:
-Button({
-  variant: "destructive",
-  size: "lg",
-  className: "shadow-lg", // Adds to the button's classes
-  children: "Delete All"
-})
 ```
 
-#### Checkbox.cva.ts - Multi-Element Component with Slots
+2. **Styles define slot classes**:
 ```typescript
-// Step 1: Define component
-export const checkboxDefinition = defineComponent({
-  tag: "mini-checkbox",
-  variants: {
-    size: { options: ["sm", "md", "lg"], default: "md" },
-    variant: { options: ["default", "primary", "destructive"], default: "default" }
-  },
-  props: {
-    checked: { type: "boolean", default: false },
-    label: { type: "string", default: undefined },
-    disabled: { type: "boolean", default: false },
-    onChange: { type: "function", default: undefined },
-    // These would be auto-generated when slots are detected:
-    inputClassName: { type: "string", default: undefined },
-    labelClassName: { type: "string", default: undefined },
-  }
-});
-
-// Step 2: Define styles with slots
-export const checkboxStyles = styleComponent(checkboxDefinition, {
-  slots: {
-    base: "flex items-start",
-    input: "peer shrink-0 rounded-sm border ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
-    label: "font-medium leading-none text-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer select-none"
-  },
-  variants: {
-    size: {
-      sm: {
-        base: "gap-1.5",
-        input: "h-3 w-3",
-        label: "text-xs"
-      },
-      md: {
-        base: "gap-2",
-        input: "h-4 w-4",
-        label: "text-sm"
-      },
-      lg: {
-        base: "gap-3",
-        input: "h-5 w-5",
-        label: "text-base"
+const checkboxStyles = styleComponent(checkboxDefinition, {
+   slots: {
+      base: "flex items-start",
+      input: "peer shrink-0 rounded-sm ...",
+      label: "font-medium leading-none ...",
+      icon: "flex items-center ..."
+   },
+   variants: {
+      size: {
+         sm: { base: "gap-1.5", input: "h-3 w-3", ... },
+         // ...
       }
-    },
-    variant: {
-      default: {
-        input: "border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
-      },
-      primary: {
-        input: "border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
-      },
-      destructive: {
-        input: "border-destructive data-[state=checked]:bg-destructive data-[state=checked]:text-destructive-foreground"
-      }
-    }
-  }
+   }
 });
+```
 
-// Step 3: Render function receives slots object (not className!)
-export const renderCheckbox = renderComponent(checkboxDefinition, (props, slots) => {
-  const { checked, disabled, label, onChange, className, inputClassName, labelClassName } = props;
-
-  const handleChange = (e: Event) => {
-    onChange?.((e.target as HTMLInputElement).checked);
-  };
-
-  return html`
-    <div class=${slots.base({ class: className })}>
-      <input
-        type="checkbox"
-        class=${slots.input({ class: inputClassName })}
-        .checked=${checked || false}
-        ?disabled=${disabled}
-        data-state=${checked ? "checked" : "unchecked"}
-        @change=${handleChange}
-      />
-      ${label ? html`
-        <label class=${slots.label({ class: labelClassName })}>
-          ${label}
-        </label>
-      ` : ''}
-    </div>
-  `;
+3. **Render function receives slots object**:
+```typescript
+const renderCheckbox = renderComponent(checkboxDefinition, checkboxStyles, (props, slots) => {
+   return html`
+      <div class=${slots.base()}>
+         <input class=${slots.input()} />
+         <label class=${slots.label()}>${props.label}</label>
+      </div>
+   `;
 });
+```
 
-// Step 4: Create component
-export const Checkbox = createComponent(checkboxDefinition, checkboxStyles, renderCheckbox);
-
-// Usage:
+4. **Users can customize each slot**:
+```typescript
 Checkbox({
-  variant: "destructive",
-  size: "lg",
-  label: "Delete account",
-  className: "p-4",              // Adds to container
-  inputClassName: "rounded-full", // Makes checkbox circular
-  labelClassName: "text-red-600 font-bold" // Red bold label
+   className: "p-4",              // Applies to base
+   inputClassName: "rounded-full", // Applies to input
+   labelClassName: "text-red-600"  // Applies to label
 })
 ```
 
-### Type Safety Guarantees
+### The Type Issue
 
-The solution provides complete type safety:
+The problem is in `ExtractPropsForClass`:
 
-1. **styleComponent overloads** ensure styles match the definition's variants
-2. **Conditional render type** means Button gets a className function, Checkbox gets slots
-3. **Automatic prop generation** for slot-specific className props
-4. **Full IntelliSense** for all variant options and slot names
+```typescript
+type RequiredDefinitionProps<T extends ComponentDefinition> = Pick<DefinitionPropValues<T>, ClassPropKeys<T>>;
 
-### Migration Strategy
+export type ExtractPropsForClass<T extends ComponentDefinition> = ExtractVariants<T> & RequiredDefinitionProps<T>;
+```
 
-1. **Install tailwind-variants**: `npm install tailwind-variants`
-2. **Update component.ts**:
-   - Replace CVA with TV
-   - Add overloaded styleComponent signatures
-   - Update createComponent to handle both single and slot styles
-   - Add conditional RenderFunction type
-3. **Migrate components**:
-   - Button: Already works, just switch from CVA to TV (no slots needed)
-   - Checkbox: Add slots structure, update render to use slots
-   - Future components: Use slots when multiple elements need styling
+When a class implements `ExtractPropsForClass`, TypeScript expects an index signature because of how `Pick` works with mapped types that include auto-generated props. The error:
 
-### Key Benefits
+```
+Type 'MiniButton' incorrectly implements interface 'ButtonPropsForClass'.
+  Index signature for type 'string' is missing in type 'MiniButton'.
+```
 
-- **Full customization** - Users can style any element within a component
-- **Type safety** - Everything checked at compile time, no runtime surprises
-- **Clean API** - Simple components stay simple, complex ones get slots
-- **Progressive enhancement** - Add slots only when needed
-- **Familiar patterns** - Matches React/Vue component libraries
-- **One dependency** - TV replaces CVA, not an additional library
+## Possible Solutions
 
-### No Backwards Compatibility Needed!
+1. **Simplify ExtractPropsForClass** - Make it less strict but lose some type safety
+2. **Explicit prop declaration** - Don't auto-generate, require manual declaration (loses DRY)
+3. **Different type enforcement mechanism** - Find another way to ensure classes have all props
+4. **Separate the auto-generated props** - Handle them differently in the type system
 
-Since we're switching fully to tailwind-variants:
-- All components use TV (simpler mental model)
-- Single-element components just don't have slots
-- Consistent API across all components
-- No need to maintain two systems
+## What Needs to Be Done
+
+1. Fix the `ExtractPropsForClass` type to work with auto-generated slot className props
+2. Ensure class components can implement the interface without index signature conflicts
+3. Maintain full type safety - the class should be forced to implement all required props
+4. Keep the developer experience clean - auto-generation should work transparently
+
+## Key Insight
+
+The auto-generation of slot className props is working perfectly at runtime. The issue is purely at the TypeScript type level. We need a way to make TypeScript understand that these props exist without creating index signature requirements that break class implementations.
+
+## Dependencies
+
+- `tailwind-variants`: ^3.1.1
+- `tailwind-merge`: ^3.3.1 (required by tailwind-variants)

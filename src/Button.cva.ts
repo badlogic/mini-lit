@@ -8,7 +8,6 @@ import {
    defineComponent,
    type ExtractProps,
    type ExtractPropsForClass,
-   type ExtractStyles,
    renderComponent,
    styleComponent,
 } from "./component.js";
@@ -81,13 +80,13 @@ export const buttonDefaultStyle = styleComponent(buttonDefinition, {
    ],
 });
 
-// Step 3: Define render function - definition passed for type inference only
-export const renderButton = renderComponent(buttonDefinition, (props, variants) => {
-   const { variant, size, disabled, loading, onClick, children, className } = props;
+// Step 3: Define render function - now receives className function for single-element component
+export const renderButton = renderComponent(buttonDefinition, buttonDefaultStyle, (props, className) => {
+   const { size, disabled, loading, onClick, children } = props;
 
    return html`
       <button
-        class=${variants({ variant, size, className })}
+        class=${className()}
         ?disabled=${disabled || loading}
         @click=${onClick}
       >
@@ -110,7 +109,7 @@ export function createButton(styles: typeof buttonDefaultStyle) {
 export const Button = createButton(buttonDefaultStyle);
 export type ButtonProps = ExtractProps<typeof buttonDefinition>;
 export type ButtonPropsForClass = ExtractPropsForClass<typeof buttonDefinition>;
-export type ButtonStyles = ExtractStyles<typeof buttonDefinition>;
+export type ButtonStyles = typeof buttonDefaultStyle;
 
 // Concerete class-based button export
 @customElement(buttonDefinition.tag)

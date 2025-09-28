@@ -1,4 +1,5 @@
 import { LitElement, type TemplateResult } from "lit";
+import { type ClassValue, tv } from "tailwind-variants";
 
 // ============================================================================
 // Component Definition Types
@@ -60,15 +61,15 @@ export type PropDef<T> =
         description?: string;
      };
 
-type PropDictionary = Record<string, PropDef<any>>;
+type PropDictionary = Record<string, PropDef<unknown>>;
 
 export type ComponentChild = TemplateResult | string | number | Node | Node[];
 
 type Simplify<T> = { [K in keyof T]: T[K] } & {};
 
 type BasePropDefinitions = {
-   className: Extract<PropDef<any>, { type: "classname" }>;
-   children: Extract<PropDef<any>, { type: "children" }>;
+   className: Extract<PropDef<unknown>, { type: "classname" }>;
+   children: Extract<PropDef<unknown>, { type: "children" }>;
 };
 
 const basePropDefinitions: BasePropDefinitions = {
@@ -126,11 +127,23 @@ function mergeBaseProps<P extends PropDictionary | undefined>(props: P): WithBas
 // Component definition with separated variants and props
 export type ComponentDefinition = {
    tag: string;
+   slots?: readonly string[]; // Define slots here as the source of truth
    variants?: {
       [key: string]: VariantDef<readonly string[]>;
    };
    props?: PropDictionary;
 };
+
+// Auto-generate slot className prop types
+type SlotClassNameProps<T extends ComponentDefinition> = T["slots"] extends readonly string[]
+   ? {
+        [K in T["slots"][number] as K extends "base" ? never : `${K}ClassName`]: {
+           type: "classname";
+           default: undefined;
+           description: string;
+        };
+     }
+   : Record<never, never>;
 
 // ============================================================================
 // Type Extraction Utilities
@@ -138,7 +151,7 @@ export type ComponentDefinition = {
 
 // Extract variant types from the variants field
 export type ExtractVariants<T extends ComponentDefinition> = T["variants"] extends infer V
-   ? V extends { [K in keyof V]: VariantDef<any> }
+   ? V extends { [K in keyof V]: VariantDef<readonly string[]> }
       ? {
            [K in keyof V]?: V[K] extends { options: readonly (infer O)[] } ? O : never;
         }
@@ -146,7 +159,7 @@ export type ExtractVariants<T extends ComponentDefinition> = T["variants"] exten
    : Record<string, never>;
 
 // Extract prop types from the props field
-type NormalizedPropDefinitions<T extends ComponentDefinition> = WithBaseProps<T["props"]>;
+type NormalizedPropDefinitions<T extends ComponentDefinition> = WithBaseProps<T["props"]> & SlotClassNameProps<T>;
 
 export type ExtractRegularProps<T extends ComponentDefinition> = {
    [K in keyof NormalizedPropDefinitions<T>]?: PropValue<NormalizedPropDefinitions<T>[K]>;
@@ -194,39 +207,45 @@ type RequiredDefinitionProps<T extends ComponentDefinition> = Pick<DefinitionPro
 export type ExtractPropsForClass<T extends ComponentDefinition> = ExtractVariants<T> & RequiredDefinitionProps<T>;
 
 // ============================================================================
-// Style Types for CVA
+// Style Types for Tailwind Variants
 // ============================================================================
 
-// Generic type for extracting the config schema structure from our styles
-type StylesToConfigSchema<S> = S extends { variants: infer V } ? V : never;
+// Map variant definitions to TV variant structure
+type MapVariantToTV<V extends VariantDef<readonly string[]>> = V extends { options: readonly (infer O)[] }
+   ? Record<O extends string ? O : never, string>
+   : never;
 
-// CVA's ClassProp structure (not exported, so we replicate it)
-type ClassProp =
-   | { class: string; className?: never }
-   | { class?: never; className: string }
-   | { class?: never; className?: never };
+type MapVariantsToTV<T extends ComponentDefinition> = T["variants"] extends infer V
+   ? V extends { [K in keyof V]: VariantDef<readonly string[]> }
+      ? { [K in keyof V]: MapVariantToTV<V[K]> }
+      : Record<string, never>
+   : Record<string, never>;
 
-// Type for compound variants matching CVA's expected structure
-export type CompoundVariant<Styles> = {
-   [K in keyof StylesToConfigSchema<Styles>]?: StylesToConfigSchema<Styles>[K] extends Record<string, any>
-      ? keyof StylesToConfigSchema<Styles>[K] | undefined
-      : never;
-} & ClassProp;
-
-// Extract just the style mapping for variants plus base styles and compound variants
-export type ExtractStyles<T extends ComponentDefinition> = {
+// Simple styles for single-element components (no slots)
+export type SimpleStyles<T extends ComponentDefinition> = {
    base?: string;
-   variants: T["variants"] extends infer V
-      ? V extends { [K in keyof V]: VariantDef<any> }
-         ? {
-              [K in keyof V]: V[K] extends { options: readonly (infer O)[] }
-                 ? Record<O extends string ? O : never, string>
-                 : never;
-           }
-         : Record<string, never>
-      : Record<string, never>;
-   compoundVariants?: CompoundVariant<ExtractStyles<T>>[];
+   variants?: MapVariantsToTV<T>;
+   defaultVariants?: ExtractVariants<T>;
+   compoundVariants?: Array<Partial<ExtractVariants<T>> & { class?: string; className?: string }>;
 };
+
+// Slot styles for multi-element components
+export type SlotStyles<T extends ComponentDefinition, Slots extends Record<string, string>> = {
+   slots: Slots;
+   variants?: {
+      [K in keyof MapVariantsToTV<T>]: {
+         [V in keyof MapVariantsToTV<T>[K]]: Partial<Slots> | string;
+      };
+   };
+   defaultVariants?: ExtractVariants<T>;
+   compoundVariants?: Array<Partial<ExtractVariants<T>> & { class?: Partial<Slots> | string; className?: never }>;
+};
+
+// Union type for any styles
+export type ComponentStyles<T extends ComponentDefinition> = SimpleStyles<T> | SlotStyles<T, Record<string, string>>;
+
+// Legacy ExtractStyles type for backward compatibility
+export type ExtractStyles<T extends ComponentDefinition> = SimpleStyles<T>;
 
 // ============================================================================
 // Helper Functions
@@ -234,18 +253,18 @@ export type ExtractStyles<T extends ComponentDefinition> = {
 
 // Extract default variant values from definition
 export function getDefaultVariants<T extends ComponentDefinition>(def: T): ExtractVariants<T> {
-   const defaults: any = {};
+   const defaults: Record<string, unknown> = {};
    if (def.variants) {
       for (const [key, value] of Object.entries(def.variants)) {
          defaults[key] = value.default;
       }
    }
-   return defaults;
+   return defaults as ExtractVariants<T>;
 }
 
 // Extract all default values from definition (for spreading as default props)
 export function getDefaultProps<T extends ComponentDefinition>(def: T): ExtractProps<T> {
-   const defaults: any = {};
+   const defaults: Record<string, unknown> = {};
 
    // Add variant defaults
    if (def.variants) {
@@ -260,41 +279,62 @@ export function getDefaultProps<T extends ComponentDefinition>(def: T): ExtractP
       defaults[key] = value.default;
    }
 
-   return defaults;
+   return defaults as ExtractProps<T>;
 }
 
 // ============================================================================
 // Component Factory
 // ============================================================================
 
-import { cva } from "class-variance-authority";
 import { fc } from "./mini.js";
 
-// Extract variant props from our styles structure
-export type VariantPropsFromStyles<S extends ExtractStyles<any>> = {
-   [K in keyof S["variants"]]?: keyof S["variants"][K];
-} & {
-   className?: string;
-   class?: string;
-};
+// TV slot return type helper
+type TVSlotResult<S> = S extends { slots: infer Slots }
+   ? { [K in keyof Slots]: (props?: { class?: ClassValue; className?: ClassValue }) => string }
+   : never;
 
-// Type for the render function - properly typed variant props
-export type RenderFunction<Props, Styles extends ExtractStyles<any>> = (
-   props: Props,
-   variants: (props?: VariantPropsFromStyles<Styles>) => string,
-) => TemplateResult;
+// Extract variant props from our styles structure
+export type VariantPropsFromStyles<S> = S extends SimpleStyles<ComponentDefinition>
+   ? { [K in keyof NonNullable<S["variants"]>]?: keyof NonNullable<S["variants"]>[K] } & {
+        className?: string;
+        class?: string;
+     }
+   : never;
+
+// Conditional render function type based on whether slots exist
+export type RenderFunction<Props, Styles> = Styles extends { slots: Record<string, string> }
+   ? (props: Props, slots: TVSlotResult<Styles>) => TemplateResult
+   : (props: Props, className: (overrides?: ClassValue) => string) => TemplateResult;
 
 // ============================================================================
 // New Component Definition API
 // ============================================================================
 
-// Define a component - just returns what you give it but with proper typing
+// Define a component - just returns what you give it but with proper typing, including auto-generated props
 type ComponentWithBaseProps<T extends ComponentDefinition> = Omit<T, "props"> & {
    props: NormalizedPropDefinitions<T>;
 };
 
 export function defineComponent<T extends ComponentDefinition>(definition: T): ComponentWithBaseProps<T> {
-   const propsWithBase = mergeBaseProps(definition.props) as NormalizedPropDefinitions<T>;
+   const props = { ...(definition.props || {}) };
+
+   // If slots are defined, auto-generate className props for them
+   if (definition.slots) {
+      for (const slotName of definition.slots) {
+         if (slotName !== "base") {
+            const propName = `${slotName}ClassName`;
+            if (!props[propName]) {
+               props[propName] = {
+                  type: "classname",
+                  default: undefined,
+                  description: `Additional CSS classes for the ${slotName} element`,
+               };
+            }
+         }
+      }
+   }
+
+   const propsWithBase = mergeBaseProps(props) as NormalizedPropDefinitions<T>;
 
    return {
       ...definition,
@@ -302,33 +342,63 @@ export function defineComponent<T extends ComponentDefinition>(definition: T): C
    } as ComponentWithBaseProps<T>;
 }
 
-// Define styles for a component - first param is for typing only
+// Overloaded styleComponent for type safety
+export function styleComponent<T extends ComponentDefinition>(definition: T, styles: SimpleStyles<T>): SimpleStyles<T>;
+
+export function styleComponent<T extends ComponentDefinition, S extends Record<string, string>>(
+   definition: T,
+   styles: SlotStyles<T, S>,
+): SlotStyles<T, S>;
+
 export function styleComponent<T extends ComponentDefinition>(
    _definition: T,
-   styles: ExtractStyles<T>,
-): ExtractStyles<T> {
+   styles: ComponentStyles<T>,
+): ComponentStyles<T> {
+   // Just return the styles - defineComponent already handles prop generation
    return styles;
 }
 
-// Define render function for a component - first param is for typing only
-export function renderComponent<T extends ComponentDefinition>(
+// Helper function that just returns the render function but helps with type inference
+export function renderComponent<T extends ComponentDefinition, S extends ComponentStyles<T>>(
    _definition: T,
-   render: RenderFunction<ExtractProps<T>, ExtractStyles<T>>,
-): RenderFunction<ExtractProps<T>, ExtractStyles<T>> {
+   _styles: S,
+   render: RenderFunction<ExtractProps<T>, S>,
+): RenderFunction<ExtractProps<T>, S> {
    return render;
 }
 
+// Helper to extract variant props from component props
+function extractVariantProps<T extends ComponentDefinition>(props: ExtractProps<T>, definition: T): ExtractVariants<T> {
+   const variantProps = {} as ExtractVariants<T>;
+   if (definition.variants) {
+      for (const key of Object.keys(definition.variants)) {
+         if (key in props) {
+            (variantProps as Record<string, unknown>)[key] = (props as Record<string, unknown>)[key];
+         }
+      }
+   }
+   return variantProps;
+}
+
+// Type guard to check if styles have slots
+function hasSlots<T extends ComponentDefinition>(
+   styles: ComponentStyles<T>,
+): styles is SlotStyles<T, Record<string, string>> {
+   return "slots" in styles;
+}
+
 // Create the actual component from definition, styles, and render
-export function createComponent<T extends ComponentDefinition>(
+export function createComponent<T extends ComponentDefinition, S extends ComponentStyles<T>>(
    definition: T,
-   styles: ExtractStyles<T>,
-   render: RenderFunction<ExtractProps<T>, ExtractStyles<T>>,
+   styles: S,
+   render: RenderFunction<ExtractProps<T>, S>,
 ) {
-   const variants = cva(styles.base || "", {
-      variants: styles.variants,
-      defaultVariants: getDefaultVariants(definition),
-      compoundVariants: styles.compoundVariants,
-   } as any);
+   const tvConfig = {
+      ...styles,
+      defaultVariants: styles.defaultVariants || getDefaultVariants(definition),
+   };
+
+   const tvInstance = tv(tvConfig as Parameters<typeof tv>[0]);
 
    const component = fc<ExtractProps<T>>((props) => {
       // Apply default values
@@ -337,16 +407,48 @@ export function createComponent<T extends ComponentDefinition>(
          ...props,
       };
 
-      // Wrap variants to match our typed signature
-      const typedVariants = (variantProps?: VariantPropsFromStyles<ExtractStyles<T>>) => {
-         return variants(variantProps as any);
-      };
+      if (hasSlots(styles)) {
+         // Multi-element component: pass slots object
+         const variantProps = extractVariantProps(propsWithDefaults, definition);
+         const slots = tvInstance({ ...variantProps }) as Record<string, (props?: { class?: ClassValue }) => string>;
 
-      return render(propsWithDefaults, typedVariants);
+         // Create slot functions that accept className overrides
+         const slotFunctions: Record<string, (overrides?: { class?: ClassValue; className?: ClassValue }) => string> =
+            {};
+         for (const [slotName, slotFn] of Object.entries(slots)) {
+            slotFunctions[slotName] = (overrides?: { class?: ClassValue; className?: ClassValue }) => {
+               // Get the slot-specific className prop if it exists
+               const slotClassNameProp =
+                  slotName === "base"
+                     ? propsWithDefaults.className
+                     : (propsWithDefaults as Record<string, unknown>)[`${slotName}ClassName`];
+
+               // Combine variant classes with user overrides
+               const classOverride = overrides?.class || overrides?.className || (slotClassNameProp as ClassValue);
+               return slotFn({ class: classOverride });
+            };
+         }
+
+         const typedRender = render as (props: ExtractProps<T>, slots: TVSlotResult<S>) => TemplateResult;
+         return typedRender(propsWithDefaults, slotFunctions as TVSlotResult<S>);
+      } else {
+         // Single-element component: pass className function
+         const className = (overrides?: ClassValue) => {
+            const variantProps = extractVariantProps(propsWithDefaults, definition);
+            const userClassName = overrides || propsWithDefaults.className;
+            return String(tvInstance({ ...variantProps, class: userClassName }));
+         };
+
+         const typedRender = render as (
+            props: ExtractProps<T>,
+            className: (overrides?: ClassValue) => string,
+         ) => TemplateResult;
+         return typedRender(propsWithDefaults, className);
+      }
    });
 
    // Attach definition for introspection
-   (component as any).__def = definition;
+   (component as { __def?: T }).__def = definition;
 
    return component;
 }
@@ -358,29 +460,34 @@ export function createComponent<T extends ComponentDefinition>(
 /**
  * Base class for Lit components using the definition system
  */
-export abstract class ComponentLitBase<T extends ComponentDefinition> extends LitElement {
-   [key: string]: any;
-
+export abstract class ComponentLitBase<
+   T extends ComponentDefinition,
+   S extends ComponentStyles<T> = ComponentStyles<T>,
+> extends LitElement {
    protected abstract definition: T;
-   protected abstract styles: ExtractStyles<T>;
-   protected abstract renderFn: RenderFunction<ExtractProps<T>, ExtractStyles<T>>;
+   protected abstract styles: S;
+   protected abstract renderFn: RenderFunction<ExtractProps<T>, S>;
 
-   private _variants?: ReturnType<typeof cva>;
+   private _tvInstance?: (
+      props?: Record<string, unknown>,
+   ) => string | Record<string, (props?: { class?: ClassValue }) => string>;
    private _children?: ComponentChild; // Captured DOM children as nodes or TemplateResult
 
    createRenderRoot() {
       return this; // Light DOM
    }
 
-   protected get variants() {
-      if (!this._variants) {
-         this._variants = cva(this.styles.base || "", {
-            variants: this.styles.variants as any,
-            defaultVariants: getDefaultVariants(this.definition) as any,
-            compoundVariants: this.styles.compoundVariants as any,
-         });
+   protected get tvInstance() {
+      if (!this._tvInstance) {
+         const tvConfig = {
+            ...this.styles,
+            defaultVariants: (this.styles as ComponentStyles<T>).defaultVariants || getDefaultVariants(this.definition),
+         };
+         this._tvInstance = tv(tvConfig as Parameters<typeof tv>[0]) as (
+            props?: Record<string, unknown>,
+         ) => string | Record<string, (props?: { class?: ClassValue }) => string>;
       }
-      return this._variants;
+      return this._tvInstance;
    }
 
    connectedCallback() {
@@ -389,8 +496,8 @@ export abstract class ComponentLitBase<T extends ComponentDefinition> extends Li
       // Apply defaults
       const defaults = getDefaultProps(this.definition);
       Object.entries(defaults).forEach(([key, value]) => {
-         if (this[key] === undefined) {
-            this[key] = value;
+         if ((this as any)[key] === undefined) {
+            (this as any)[key] = value;
          }
       });
    }
@@ -407,26 +514,64 @@ export abstract class ComponentLitBase<T extends ComponentDefinition> extends Li
       // Collect all props
       if (this.definition?.variants) {
          for (const key of Object.keys(this.definition.variants)) {
-            (props as any)[key] = this[key];
+            (props as Record<string, unknown>)[key] = (this as any)[key];
          }
       }
 
       if (this.definition?.props) {
          for (const key of Object.keys(this.definition.props)) {
             if (key === "children") {
-               (props as any)[key] = this._children || Array.from(this.childNodes);
+               (props as Record<string, unknown>)[key] = this._children || Array.from(this.childNodes);
             } else {
-               (props as any)[key] = this[key];
+               (props as Record<string, unknown>)[key] = (this as any)[key];
             }
          }
       }
 
       props.className = this.className as ExtractProps<T>["className"];
 
-      const variantsFn = (variantProps?: VariantPropsFromStyles<ExtractStyles<T>>) => {
-         return this.variants(variantProps as any);
-      };
+      if (hasSlots(this.styles)) {
+         // Multi-element component: create slots object
+         const variantProps = extractVariantProps(props, this.definition);
+         const slotsResult = this.tvInstance!({ ...variantProps });
+         const slots = (typeof slotsResult === "function" ? {} : slotsResult) as Record<
+            string,
+            (props?: { class?: ClassValue }) => string
+         >;
 
-      return this.renderFn(props, variantsFn);
+         // Create slot functions that accept className overrides
+         const slotFunctions: Record<string, (overrides?: { class?: ClassValue; className?: ClassValue }) => string> =
+            {};
+         for (const [slotName, slotFn] of Object.entries(slots)) {
+            slotFunctions[slotName] = (overrides?: { class?: ClassValue; className?: ClassValue }) => {
+               // Get the slot-specific className prop if it exists
+               const slotClassNameProp =
+                  slotName === "base" ? props.className : (props as Record<string, unknown>)[`${slotName}ClassName`];
+
+               // Combine variant classes with user overrides
+               const classOverride = overrides?.class || overrides?.className || (slotClassNameProp as ClassValue);
+               return slotFn({ class: classOverride });
+            };
+         }
+
+         const typedRender = this.renderFn as (props: ExtractProps<T>, slots: TVSlotResult<S>) => TemplateResult;
+         return typedRender(props, slotFunctions as TVSlotResult<S>);
+      } else {
+         // Single-element component: create className function
+         const className = (overrides?: ClassValue) => {
+            const variantProps = extractVariantProps(props, this.definition);
+            const userClassName = overrides || props.className;
+            return String(this.tvInstance!({ ...variantProps, class: userClassName }));
+         };
+
+         const typedRender = this.renderFn as (
+            props: ExtractProps<T>,
+            className: (overrides?: ClassValue) => string,
+         ) => TemplateResult;
+         return typedRender(props, className);
+      }
    }
 }
+
+export type { Ref, TemplateResult } from "./mini.js";
+export { createRef, html, nothing, ref } from "./mini.js";
