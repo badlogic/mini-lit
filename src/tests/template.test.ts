@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { Component, createComponent, mount } from "../next/component.js";
+import { createComponent, mount } from "../next/component.js";
 import { repeat } from "../next/directives/repeat.js";
 import { signal } from "../next/signals.js";
 import { html, registerComponents } from "../next/template.js";
@@ -20,7 +20,7 @@ describe("Template Runtime Issues", () => {
    });
 
    describe("Multi-interpolation text nodes", () => {
-      test("BROKEN: multiple dynamic values in text node lose position", async () => {
+      test("multiple dynamic values in text node maintain position", async () => {
          const val1 = signal("A");
          const val2 = signal("B");
          const val3 = signal("C");
@@ -32,18 +32,17 @@ describe("Template Runtime Issues", () => {
          val1.value = "AA";
          await nextTick();
 
-         // This SHOULD be "First: AA, Second: B, Third: C"
-         // But it's actually broken - values jump to end
-         expect(elem.textContent).not.toBe("First: AA, Second: B, Third: C");
+         // Values should maintain their position
+         expect(elem.textContent).toBe("First: AA, Second: B, Third: C");
 
          val2.value = "BB";
          await nextTick();
 
-         // Order is completely messed up
-         expect(elem.textContent).not.toBe("First: AA, Second: BB, Third: C");
+         // Order should be correct
+         expect(elem.textContent).toBe("First: AA, Second: BB, Third: C");
       });
 
-      test("BROKEN: data attributes example", async () => {
+      test("data attributes example", async () => {
          const dataValue = signal(42);
          const customAttr = signal("test");
 
@@ -57,9 +56,8 @@ describe("Template Runtime Issues", () => {
          customAttr.value = "updated";
          await nextTick();
 
-         // Should be "data-value: 43, data-custom: updated"
-         // But values append at end: "data-value: , data-custom: 43updated"
-         expect(elem.textContent).not.toBe("data-value: 43, data-custom: updated");
+         // Values should update correctly
+         expect(elem.textContent).toBe("data-value: 43, data-custom: updated");
       });
    });
 

@@ -5,33 +5,35 @@ export function setupDOM() {
    const window = new Window();
    const document = window.document;
 
-   // Set globals
-   global.document = document as any;
-   global.window = window as any;
-   global.Node = window.Node;
-   global.Element = window.Element;
-   global.HTMLElement = window.HTMLElement;
-   global.HTMLInputElement = window.HTMLInputElement;
-   global.Text = window.Text;
-   global.Comment = window.Comment;
-   global.DocumentFragment = window.DocumentFragment;
-   global.CustomEvent = window.CustomEvent;
+   // Set globals with proper type assertions
+   (global as any).document = document;
+   (global as any).window = window;
+   (global as any).Node = window.Node;
+   (global as any).Element = window.Element;
+   (global as any).HTMLElement = window.HTMLElement;
+   (global as any).HTMLInputElement = window.HTMLInputElement;
+   (global as any).Text = window.Text;
+   (global as any).Comment = window.Comment;
+   (global as any).DocumentFragment = window.DocumentFragment;
+   (global as any).CustomEvent = window.CustomEvent;
 
    return { window, document };
 }
 
 export function cleanupDOM(window: any) {
    window.close();
-   delete global.document;
-   delete global.window;
-   delete global.Node;
-   delete global.Element;
-   delete global.HTMLElement;
-   delete global.HTMLInputElement;
-   delete global.Text;
-   delete global.Comment;
-   delete global.DocumentFragment;
-   delete global.CustomEvent;
+   // Use optional chaining and type assertions for cleanup
+   const g = global as any;
+   delete g.document;
+   delete g.window;
+   delete g.Node;
+   delete g.Element;
+   delete g.HTMLElement;
+   delete g.HTMLInputElement;
+   delete g.Text;
+   delete g.Comment;
+   delete g.DocumentFragment;
+   delete g.CustomEvent;
 }
 
 // Helper to wait for effects to settle

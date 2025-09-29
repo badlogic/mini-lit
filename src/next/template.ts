@@ -244,6 +244,33 @@ function compileNode(
       if (node.content?.includes("###")) {
          // Dynamic text - use r.insert
          const parts = node.content.split("###");
+         const dynamicCount = parts.length - 1;
+
+         // Handle multiple interpolations with markers to maintain position
+         if (dynamicCount > 1 && options.parent) {
+            for (let i = 0; i < parts.length; i++) {
+               // Add static text
+               if (parts[i]) {
+                  const text = parts[i]
+                     .replace(/"/g, '\\"')
+                     .replace(/\n/g, "\\n")
+                     .replace(/\r/g, "\\r")
+                     .replace(/\t/g, "\\t");
+                  options.exprs.push(`${options.parent}.appendChild(document.createTextNode("${text}"))`);
+               }
+
+               // Add marker and dynamic value (except after last part)
+               if (i < parts.length - 1) {
+                  const markerId = uid();
+                  options.decl.push(`const ${markerId} = document.createComment("")`);
+                  options.exprs.push(`${options.parent}.appendChild(${markerId})`);
+                  options.exprs.push(`r.insert(${options.parent}, values[${options.counter++}], ${markerId})`);
+               }
+            }
+            return "";
+         }
+
+         // Single interpolation or no parent - use existing logic
          const exprs: string[] = [];
 
          for (let i = 0; i < parts.length; i++) {
