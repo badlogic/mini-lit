@@ -62,29 +62,34 @@ describe("Template Runtime Issues", () => {
    });
 
    describe("Interpolated attributes with signals", () => {
-      test("BROKEN: interpolated attributes don't handle signals", async () => {
+      test("interpolated attributes handle signals", async () => {
          const count = signal(5);
          const elem = html`<div title="Count: ${count}"></div>` as HTMLElement;
 
-         // Initial render might work or show [object Object]
-         const title = elem.getAttribute("title");
-         expect(title).toContain("[object"); // Shows the signal object!
+         // Initial render should show the value
+         expect(elem.getAttribute("title")).toBe("Count: 5");
 
          count.value = 10;
          await nextTick();
 
-         // Should update to "Count: 10" but doesn't
-         expect(elem.getAttribute("title")).not.toBe("Count: 10");
+         // Should update reactively
+         expect(elem.getAttribute("title")).toBe("Count: 10");
       });
 
-      test("BROKEN: class attribute with signal in interpolation", async () => {
+      test("class attribute with signal in interpolation", async () => {
          const active = signal(false);
          const elem = html`
             <div class="base ${active}"></div>
          ` as HTMLElement;
 
-         // Shows "base [object Object]"
-         expect(elem.className).toContain("[object");
+         // Should show boolean value as string
+         expect(elem.className).toBe("base false");
+
+         active.value = true;
+         await nextTick();
+
+         // Should update reactively
+         expect(elem.className).toBe("base true");
       });
    });
 

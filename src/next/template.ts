@@ -199,6 +199,11 @@ const runtime = {
          callback.current = node;
       }
    },
+
+   // Expose isSignal for use in generated code
+   isSignal(value: any): boolean {
+      return isSignal(value);
+   },
 };
 
 // Cache for compiled templates
@@ -434,9 +439,10 @@ function compileNode(
                // Dynamic attribute
                options.exprs.push(`r.setAttribute(${elemId}, "${name}", values[${options.counter++}])`);
             } else if (value.includes("###")) {
-               // Interpolated attribute
+               // Interpolated attribute - wrap in function to handle signals
                const parts = value.split("###");
                const exprs: string[] = [];
+
                for (let i = 0; i < parts.length; i++) {
                   if (parts[i]) {
                      exprs.push(
@@ -448,11 +454,18 @@ function compileNode(
                      );
                   }
                   if (i < parts.length - 1) {
-                     exprs.push(`values[${options.counter++}]`);
+                     const valueRef = `values[${options.counter++}]`;
+                     // Let the runtime handle signal unwrapping via the function
+                     // If it's a signal, accessing it in the function will track it
+                     exprs.push(
+                        `(typeof ${valueRef} === 'function' ? ${valueRef}() : r.isSignal(${valueRef}) ? ${valueRef}.value : ${valueRef})`,
+                     );
                   }
                }
-               const expr = exprs.length === 1 ? exprs[0] : exprs.join(" + ");
-               options.exprs.push(`r.setAttribute(${elemId}, "${name}", ${expr})`);
+
+               // Wrap in a function so setAttribute creates an effect and tracks signals
+               const expr = exprs.join(" + ");
+               options.exprs.push(`r.setAttribute(${elemId}, "${name}", () => ${expr})`);
             } else {
                // Static attribute
                options.exprs.push(

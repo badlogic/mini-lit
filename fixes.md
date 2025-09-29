@@ -488,3 +488,18 @@ Each fix should make its corresponding test pass. After all fixes:
 3. **Performance tests** - Measure update performance vs React
 4. **Edge case tests** - Empty arrays, null values, undefined signals
 5. **Integration tests** - Full todo app scenarios
+
+## Fix Progress Checklist
+
+**Instructions:** When implementing fixes, start with the first unchecked item in this list. After completing each fix and verifying that both `npm run check` and `npm test` pass for that specific fix, check it off and move to the next unchecked item.
+
+- [x] **Fix #1: Multi-interpolation text nodes** - Create markers for each dynamic value to maintain position
+- [x] **Fix #2: Interpolated attributes** - Wrap in function and properly unwrap signals
+- [ ] **Fix #3: Add effect cleanup** - Track and dispose effects on unmount (Critical memory leak)
+- [ ] **Fix #4: Add event listener cleanup** - Track and remove event listeners (Memory leak)
+- [ ] **Fix #5: Fix event handler reactivity** - Make event handlers update when signal changes
+- [ ] **Fix #6: Add error boundaries** - Wrap effects in try/catch
+- [ ] **Fix #7: Fix directive cleanup** - Clean up directives when arrays change
+- [ ] **Fix #8: Fix repeat ordering** - Use DocumentFragment for multi-node moves
+- [ ] **Fix #9: Clean up slot processing** - Remove duplication between Component and createComponent
+- [ ] **Fix #10: Boolean attributes** - Complete the partial fix for interpolated boolean attributes
