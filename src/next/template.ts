@@ -144,10 +144,33 @@ const runtime = {
    },
 
    setAttribute(node: Element, name: string, value: any) {
-      if (value == null) {
-         node.removeAttribute(name);
+      const signals = getSignalAdapter();
+
+      // Check if value is reactive
+      if (typeof value === "function" || isSignal(value) || signals.isRawSignal(value)) {
+         // Create effect for reactive attributes
+         signals.createEffect(() => {
+            const actualValue =
+               typeof value === "function" ? value() : isSignal(value) ? value.value : signals.getValue(value);
+
+            if (actualValue == null || actualValue === false) {
+               node.removeAttribute(name);
+            } else if (actualValue === true) {
+               // Boolean attribute - set empty string
+               node.setAttribute(name, "");
+            } else {
+               node.setAttribute(name, String(actualValue));
+            }
+         });
       } else {
-         node.setAttribute(name, value);
+         // Static value
+         if (value == null || value === false) {
+            node.removeAttribute(name);
+         } else if (value === true) {
+            node.setAttribute(name, "");
+         } else {
+            node.setAttribute(name, String(value));
+         }
       }
    },
 

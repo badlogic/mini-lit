@@ -332,7 +332,7 @@ class SlotsExample extends Component {
 // Demo Page
 // ============================================================================
 
-@customElement("page-html-template-demo")
+@customElement("page-next-demo")
 export class HtmlTemplateDemoPage extends LitElement {
    createRenderRoot() {
       return this;

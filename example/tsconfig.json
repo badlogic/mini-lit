@@ -14,7 +14,8 @@
       "declarationMap": true,
       "sourceMap": true,
       "outDir": "./dist",
-      "rootDir": "./src"
+      "rootDir": "./src",
+      "jsx": "react-jsx"
    },
    "include": ["src/**/*"]
 }
