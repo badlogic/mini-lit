@@ -134,6 +134,13 @@ export class MiniButton extends ComponentLitBase<typeof buttonDefinition> implem
    protected definition = buttonDefinition;
    protected styles = buttonDefaultStyle;
    protected renderFn = renderButton;
+
+   connectedCallback() {
+      super.connectedCallback();
+      if (!this.style.display) {
+         this.style.display = "inline-block";
+      }
+   }
 }
 
 // Type declarations for lit-plugin autocomplete

@@ -200,65 +200,11 @@ export abstract class ComponentPage<T extends ComponentDefinition> extends LitEl
       return html`
          <section class="mb-12">
             <h2 class="text-xl font-semibold mb-4">Default Styles</h2>
-            <div class="bg-card text-card-foreground rounded-xl border border-border shadow-xs p-6 max-w-4xl">
-               ${
-                  styles.base
-                     ? html`
-                  <div class="mb-6">
-                     <h3 class="text-sm font-medium text-muted-foreground mb-2">Base</h3>
-                     <div class="overflow-x-auto">
-                        <code-block
-                           .code=${styles.base}
-                        ></code-block>
-                     </div>
-                  </div>
-               `
-                     : ""
-               }
-
-               ${
-                  styles.variants
-                     ? Object.entries(styles.variants).map(([variantKey, variantStyles]: [string, any]) => {
-                          const variantCode = Object.entries(variantStyles)
-                             .map(([option, className]) => `${option}: ${className}`)
-                             .join("\n");
-
-                          return html`
-                     <div class="mb-6">
-                        <h3 class="text-sm font-medium text-muted-foreground mb-2">${variantKey}</h3>
-                        <div class="overflow-x-auto">
-                           <code-block
-                              .code=${variantCode}
-                           ></code-block>
-                        </div>
-                     </div>
-                  `;
-                       })
-                     : ""
-               }
-
-               ${
-                  styles.compoundVariants
-                     ? html`
-                  <div class="mb-6">
-                     <h3 class="text-sm font-medium text-muted-foreground mb-2">Compound Variants</h3>
-                     <div class="overflow-x-auto">
-                        <code-block
-                           .code=${styles.compoundVariants
-                              .map((cv: any) => {
-                                 const conditions = Object.entries(cv)
-                                    .filter(([key]) => key !== "className")
-                                    .map(([key, value]) => `${key}: "${value}"`)
-                                    .join(", ");
-                                 return `[${conditions}]: ${cv.className}`;
-                              })
-                              .join("\n")}
-                        ></code-block>
-                     </div>
-                  </div>
-               `
-                     : ""
-               }
+            <div class="bg-card text-card-foreground rounded-xl border border-border shadow-xs p-6">
+               <code-block
+                  .code=${JSON.stringify(styles, null, 2)}
+                  language="json"
+               ></code-block>
             </div>
          </section>
       `;

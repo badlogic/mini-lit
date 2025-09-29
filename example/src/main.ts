@@ -29,6 +29,7 @@ import "./pages/sidebar.js";
 import "./pages/og-image.js";
 // New System Components
 import "./pages/button-cva.js";
+import "./pages/next-demo.js";
 
 const outlet = document.getElementById("outlet");
 const router = new Router(outlet);
@@ -59,6 +60,9 @@ router.setRoutes([
    { path: "/og-image", component: "page-og-image" },
    // New System Routes
    { path: "/button-cva", component: "page-button-cva" },
+   { path: "/checkbox-cva", component: "page-checkbox-cva" },
+   { path: "/light-dom-rerender", component: "page-light-dom-rerender-simple" },
+   { path: "/html-template", component: "page-html-template-demo" },
 ]);
 
 // Setup sidebar content
@@ -118,6 +122,8 @@ const sidebarContent = html`
       title: "New System",
       children: html`
          ${SidebarItem({ href: "/button-cva", children: "Button (CVA)" })}
+         ${SidebarItem({ href: "/mini-lit-next", children: "mini-lit-next Demo" })}
+         ${SidebarItem({ href: "/html-template", children: "Component HTML Templates" })}
       `,
    })}
 `;

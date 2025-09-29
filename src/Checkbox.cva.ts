@@ -1,6 +1,7 @@
 import { html } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { Check } from "lucide";
+import { ifDefined } from "lit/directives/if-defined.js";
+import { Check, Minus } from "lucide";
 import {
    ComponentLitBase,
    createComponent,
@@ -11,12 +12,10 @@ import {
    styleComponent,
 } from "./component.js";
 import { icon } from "./icons.js";
-import { createRef, ref } from "./mini.js";
 
 // Step 1: Define the component structure
 export const checkboxDefinition = defineComponent({
    tag: "mini-checkbox",
-   slots: ["base", "input", "label", "icon"] as const,
    variants: {
       size: {
          options: ["sm", "md", "lg"] as const,
@@ -45,11 +44,6 @@ export const checkboxDefinition = defineComponent({
          default: false,
          description: "Whether the checkbox is disabled",
       },
-      label: {
-         type: "string",
-         default: undefined as string | undefined,
-         description: "Label text for the checkbox",
-      },
       name: {
          type: "string",
          default: undefined as string | undefined,
@@ -73,100 +67,57 @@ export const checkboxDefinition = defineComponent({
    },
 });
 
-// Step 2: Define styles with slots for multi-element component
+// Step 2: Define styles - single element component now
 export const checkboxDefaultStyle = styleComponent(checkboxDefinition, {
-   slots: {
-      base: "flex items-start",
-      input: "peer shrink-0 rounded-sm border ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground",
-      label: "font-medium leading-none text-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer select-none",
-      icon: "flex items-center justify-center text-current",
-   },
+   base: "peer shrink-0 appearance-none rounded border border-input bg-background shadow-xs ring-offset-background transition-all outline-none cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:border-primary data-[state=checked]:text-primary-foreground hover:border-muted-foreground/50",
    variants: {
       size: {
-         sm: {
-            base: "gap-1.5",
-            input: "h-3 w-3",
-            label: "text-xs",
-         },
-         md: {
-            base: "gap-2",
-            input: "h-4 w-4",
-            label: "text-sm",
-         },
-         lg: {
-            base: "gap-3",
-            input: "h-5 w-5",
-            label: "text-base",
-         },
+         sm: "h-3.5 w-3.5",
+         md: "h-4 w-4",
+         lg: "h-5 w-5",
       },
       variant: {
-         default: {
-            input: "border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground",
-         },
-         primary: {
-            input: "border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground",
-         },
-         destructive: {
-            input: "border-destructive data-[state=checked]:bg-destructive data-[state=checked]:text-destructive-foreground",
-         },
+         default: "data-[state=checked]:bg-primary data-[state=checked]:border-primary",
+         primary: "data-[state=checked]:bg-primary data-[state=checked]:border-primary",
+         destructive:
+            "data-[state=checked]:bg-destructive data-[state=checked]:border-destructive data-[state=checked]:text-destructive-foreground",
       },
    },
 });
 
-// Step 3: Define render function - now receives slots object for multi-element component
-export const renderCheckbox = renderComponent(checkboxDefinition, checkboxDefaultStyle, (props, slots) => {
-   const { size, checked, indeterminate, disabled, label, name, value, id, onChange } = props;
-
-   const inputRef = createRef<HTMLInputElement>();
-   // Generate a unique ID if label is provided but ID is not
-   const checkboxId = id || (label ? `checkbox-${Math.random().toString(36).substr(2, 9)}` : "");
+// Step 3: Define render function - now receives className function for single-element component
+export const renderCheckbox = renderComponent(checkboxDefinition, checkboxDefaultStyle, (props, className) => {
+   const { size, checked, indeterminate, disabled, name, value, id, onChange } = props;
 
    const handleChange = (e: Event) => {
-      const target = e.target as HTMLInputElement;
-      onChange?.(target.checked);
+      const input = e.target as HTMLInputElement;
+      onChange?.(input.checked);
    };
-
-   // Set indeterminate state after render
-   if (inputRef.value && indeterminate !== undefined) {
-      inputRef.value.indeterminate = indeterminate;
-   }
 
    // Icon size based on checkbox size
    const iconSize = size === "sm" ? "xs" : size === "lg" ? "sm" : "xs";
 
    return html`
-      <div class=${slots.base()}>
-         <div class="relative inline-flex">
-            <input
-               ${ref(inputRef)}
-               type="checkbox"
-               id="${checkboxId}"
-               class="${slots.input()}"
-               .checked=${checked || false}
-               ?disabled=${disabled}
-               name="${name || ""}"
-               value="${value || ""}"
-               data-state="${checked ? "checked" : "unchecked"}"
-               @change=${handleChange}
-            />
-            ${
-               checked
-                  ? html`
-                  <span class="${slots.icon()} absolute inset-0 pointer-events-none">
-                     ${icon(Check, iconSize)}
-                  </span>
-               `
-                  : ""
-            }
-         </div>
+      <div class="relative inline-flex">
+         <input
+            type="checkbox"
+            id=${ifDefined(id ?? undefined)}
+            name=${ifDefined(name ?? undefined)}
+            value=${ifDefined(value ?? undefined)}
+            .checked=${checked || false}
+            ?disabled=${disabled}
+            @change=${handleChange}
+            data-state="${checked ? "checked" : "unchecked"}"
+            class="${className()}"
+         />
          ${
-            label
+            checked || indeterminate
                ? html`
-               <label for="${checkboxId}" class="${slots.label()}">
-                  ${label}
-               </label>
+               <span class="absolute inset-0 flex items-center justify-center text-current pointer-events-none">
+                  ${indeterminate ? icon(Minus, iconSize) : icon(Check, iconSize)}
+               </span>
             `
-               : ""
+               : null
          }
       </div>
    `;
@@ -207,25 +158,16 @@ export class MiniCheckbox
    disabled: CheckboxProps["disabled"] = checkboxDefinition.props.disabled.default;
 
    @property({ type: String })
-   label: CheckboxProps["label"] = checkboxDefinition.props.label.default;
-
-   @property({ type: String })
    name: CheckboxProps["name"] = checkboxDefinition.props.name.default;
 
    @property({ type: String })
    value: CheckboxProps["value"] = checkboxDefinition.props.value.default;
 
+   @property({ type: String })
+   id: string = checkboxDefinition.props.id.default ?? "";
+
    @property({ attribute: false })
    onChange: CheckboxProps["onChange"] = checkboxDefinition.props.onChange.default;
-
-   @property({ type: String })
-   inputClassName: CheckboxProps["inputClassName"] = checkboxDefinition.props.inputClassName.default;
-
-   @property({ type: String })
-   labelClassName: CheckboxProps["labelClassName"] = checkboxDefinition.props.labelClassName.default;
-
-   @property({ type: String })
-   iconClassName: CheckboxProps["iconClassName"] = checkboxDefinition.props.iconClassName.default;
 
    // Provide definition, styles, and render function
    protected definition = checkboxDefinition;
