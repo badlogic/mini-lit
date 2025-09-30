@@ -27,11 +27,6 @@ import "./pages/splitpanel.js";
 import "./pages/diff.js";
 import "./pages/sidebar.js";
 import "./pages/og-image.js";
-// New System Components
-import "./pages/button-cva.js";
-import "./pages/next-demo.js";
-import "./pages/react-todo-demo.js";
-import "./pages/reactive-attributes-test.js";
 
 const outlet = document.getElementById("outlet");
 const router = new Router(outlet);
@@ -60,11 +55,6 @@ router.setRoutes([
    { path: "/diff", component: "page-diff" },
    { path: "/sidebar", component: "page-sidebar" },
    { path: "/og-image", component: "page-og-image" },
-   // New System Routes
-   { path: "/button-cva", component: "page-button-cva" },
-   { path: "/next-demo", component: "page-next-demo" },
-   { path: "/react-todo-demo", component: "page-react-todo-demo" },
-   { path: "/reactive-attributes-test", component: "page-reactive-attributes-test" },
 ]);
 
 // Setup sidebar content
@@ -118,15 +108,6 @@ const sidebarContent = html`
       title: "Utilities",
       children: html`
          ${SidebarItem({ href: "/languageselector", children: "i18n & Language Selector" })}
-      `,
-   })}
-   ${SidebarSection({
-      title: "New System",
-      children: html`
-         ${SidebarItem({ href: "/button-cva", children: "Button (CVA)" })}
-         ${SidebarItem({ href: "/next-demo", children: "next Demo" })}
-         ${SidebarItem({ href: "/react-todo-demo", children: "React vs Mini-Lit DOM Updates" })}
-         ${SidebarItem({ href: "/reactive-attributes-test", children: "Reactive Attributes Test" })}
       `,
    })}
 `;
