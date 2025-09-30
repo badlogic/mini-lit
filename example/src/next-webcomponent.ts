@@ -100,9 +100,10 @@ function toAccessor<T>(value: PropInput<T>, key: string): Accessor<T> {
       return value as Accessor<T>;
    }
    if (isSignal(value)) {
-      console.warn(
-         `mini-lit: Prop "${String(key)}" received a signal instance. Wrap it in () => signal.value instead.`,
-      );
+      logDebug(() => [
+         `Prop "${String(key)}" received a signal instance. Wrap it in () => signal.value instead.`,
+         value,
+      ]);
       throw new Error(`Prop "${key}" received a signal. Wrap it in () => signal.value instead.`);
    }
    return () => value as T;
@@ -178,6 +179,91 @@ export function defaultProps<P extends Record<string, any>, D extends Partial<{ 
  */
 
 const HOLE_MARKER = "$__HOLE__$";
+const astCache = new WeakMap<TemplateStringsArray, HtmlNode[]>();
+let debugLoggingEnabled = false;
+const templateIds = new WeakMap<TemplateStringsArray, number>();
+let templateIdCounter = 0;
+interface TemplateMetrics {
+   id: number;
+   source: string;
+   parseDuration: number;
+   runs: number;
+   totalInterpretDuration: number;
+}
+
+const templateMetrics = new Map<number, TemplateMetrics>();
+
+export function getMiniLitMetrics() {
+   return Array.from(templateMetrics.values()).map((metric) => {
+      return {
+         id: metric.id,
+         parseDuration: metric.parseDuration,
+         runs: metric.runs,
+         totalInterpretDuration: metric.totalInterpretDuration,
+         averageInterpretDuration: metric.runs > 0 ? metric.totalInterpretDuration / metric.runs : 0,
+      };
+   });
+}
+
+export function enableMiniLitDebug(value = true) {
+   debugLoggingEnabled = value;
+   if (!debugLoggingEnabled) {
+      templateMetrics.clear();
+   }
+}
+
+export function printMiniLitMetrics() {
+   const metrics = getMiniLitMetrics();
+   if (!metrics.length) {
+      console.info("[mini-lit] no metrics recorded");
+      return;
+   }
+   console.table(
+      metrics.map((m) => ({
+         id: m.id,
+         parseDuration: m.parseDuration.toFixed ? Number(m.parseDuration.toFixed(2)) : m.parseDuration,
+         runs: m.runs,
+         totalInterpretDuration: m.totalInterpretDuration.toFixed
+            ? Number(m.totalInterpretDuration.toFixed(2))
+            : m.totalInterpretDuration,
+         averageInterpretDuration: m.averageInterpretDuration.toFixed
+            ? Number(m.averageInterpretDuration.toFixed(2))
+            : m.averageInterpretDuration,
+      })),
+   );
+}
+
+if (typeof window !== "undefined") {
+   (window as any).miniLit = (window as any).miniLit || {};
+   (window as any).miniLit.printMetrics = printMiniLitMetrics;
+   (window as any).miniLit.enableDebug = enableMiniLitDebug;
+}
+
+function getTemplateId(strings: TemplateStringsArray): number {
+   let id = templateIds.get(strings);
+   if (id === undefined) {
+      id = ++templateIdCounter;
+      templateIds.set(strings, id);
+   }
+   return id;
+}
+
+function now(): number {
+   if (typeof performance !== "undefined" && typeof performance.now === "function") {
+      return performance.now();
+   }
+   return Date.now();
+}
+
+type LogFactory = () => [string, ...any[]];
+
+function logDebug(factory: LogFactory) {
+   if (!debugLoggingEnabled) {
+      return;
+   }
+   const [message, ...args] = factory();
+   console.info(`[mini-lit] ${message}`, ...args);
+}
 
 interface HtmlNode {
    type: "tag" | "text" | string;
@@ -431,9 +517,42 @@ function interpret(nodes: HtmlNode[], values: any[], cleanups: Cleanup[]): Docum
                   parent.appendChild(end);
 
                   const nestedCleanups: Cleanup[] = [];
+                  let textNodeRef: Text | null = null;
+                  let renderMode: "text" | "nodes" | null = null;
 
                   const dispose = effect(() => {
-                     const result = materialize((value as Accessor<any>)());
+                     const accessor = value as Accessor<any>;
+                     const nextValue = accessor();
+                     const isTextLike =
+                        nextValue == null ||
+                        typeof nextValue === "string" ||
+                        typeof nextValue === "number" ||
+                        typeof nextValue === "boolean" ||
+                        typeof nextValue === "bigint";
+
+                     if (isTextLike) {
+                        const textContent = nextValue == null ? "" : String(nextValue);
+
+                        if (renderMode !== "text") {
+                           clearBetweenMarkers(start, end, nestedCleanups);
+                           const node = document.createTextNode(textContent);
+                           end.parentNode?.insertBefore(node, end);
+                           textNodeRef = node;
+                           renderMode = "text";
+                        } else if (textNodeRef) {
+                           textNodeRef.data = textContent;
+                        }
+
+                        return;
+                     }
+
+                     if (renderMode === "text" && textNodeRef) {
+                        textNodeRef.remove();
+                        textNodeRef = null;
+                     }
+                     renderMode = "nodes";
+
+                     const result = materialize(nextValue);
                      clearBetweenMarkers(start, end, nestedCleanups);
                      for (const node of result.nodes) {
                         end.parentNode?.insertBefore(node, end);
@@ -494,15 +613,45 @@ function interpret(nodes: HtmlNode[], values: any[], cleanups: Cleanup[]): Docum
 }
 
 export function html(strings: TemplateStringsArray, ...values: any[]): DocumentFragment {
-   let htmlString = "";
-   for (const part of strings) {
-      htmlString += part + HOLE_MARKER;
-   }
-   htmlString = htmlString.slice(0, -HOLE_MARKER.length);
+   const templateId = getTemplateId(strings);
+   let ast = astCache.get(strings);
 
-   const ast = parse(htmlString) as HtmlNode[];
+   if (!ast) {
+      let htmlString = "";
+      for (const part of strings) {
+         htmlString += part + HOLE_MARKER;
+      }
+      htmlString = htmlString.slice(0, -HOLE_MARKER.length);
+
+      const parseStart = now();
+      ast = parse(htmlString) as HtmlNode[];
+      const parseDuration = now() - parseStart;
+
+      astCache.set(strings, ast);
+      if (debugLoggingEnabled) {
+         templateMetrics.set(templateId, {
+            id: templateId,
+            source: htmlString,
+            parseDuration,
+            runs: 0,
+            totalInterpretDuration: 0,
+         });
+      }
+   }
+
+   const interpretStart = now();
    const cleanups: Cleanup[] = [];
    const fragment = interpret(ast, values, cleanups);
+   const interpretDuration = now() - interpretStart;
+
+   if (debugLoggingEnabled) {
+      const metrics = templateMetrics.get(templateId);
+      if (metrics) {
+         metrics.runs += 1;
+         metrics.totalInterpretDuration += interpretDuration;
+      }
+   }
+
    setFragmentCleanup(fragment, cleanups);
    return fragment;
 }

@@ -7,9 +7,12 @@ A compact runtime that renders tagged `html` templates with fine-grained reactiv
 - Each rendered fragment tracks its cleanups (event listeners, nested component disposers) and exposes them via `.cleanup`.
 - `defaultProps` converts plain values into accessors and guards against raw `signal` instances so props remain predictable.
 - Event bindings (`@event`) and property bindings (`.prop`) support both native elements and custom elements generated through `component()`.
+- Template ASTs are cached per `TemplateStringsArray`, so repeated renders skip the parse step.
+- Debug logging can be toggled via `enableMiniLitDebug(true)` to trace what the runtime is doing.
+- Parsing and interpretation timings are stored in `getMiniLitMetrics()`, so you can inspect performance after exercising the UI.
 
 ## Backlog
-- [ ] **Fast-path reactive text updates** – Avoid removing and re-inserting text nodes during simple signal updates to reduce flashing.
+- [x] **Fast-path reactive text updates** – Avoid removing and re-inserting text nodes during simple signal updates to reduce flashing.
 - [ ] **Handler defaults in `defaultProps`** – Allow default event handlers to be supplied and returned as non-undefined callables.
 - [ ] **Keyed list helper** – Provide a helper that reuses DOM nodes instead of recreating entire lists on each change.
 - [ ] **Root cleanup helper (optional)** – Add a `renderRoot` helper that wraps templates in an owner and returns a disposer for top-level unmounting.
@@ -118,9 +121,7 @@ function toAccessor<T>(value: PropInput<T>, key: string): Accessor<T> {
       return value as Accessor<T>;
    }
    if (isSignal(value)) {
-      console.warn(
-         `mini-lit: Prop "${String(key)}" received a signal instance. Wrap it in () => signal.value instead.`,
-      );
+      logDebug(`Prop "${String(key)}" received a signal instance. Wrap it in () => signal.value instead.`, value);
       throw new Error(`Prop "${key}" received a signal. Wrap it in () => signal.value instead.`);
    }
    return () => value as T;
@@ -196,6 +197,19 @@ export function defaultProps<P extends Record<string, any>, D extends Partial<{ 
  */
 
 const HOLE_MARKER = "$__HOLE__$";
+const astCache = new WeakMap<TemplateStringsArray, HtmlNode[]>();
+let debugLoggingEnabled = false;
+
+export function enableMiniLitDebug(value = true) {
+   debugLoggingEnabled = value;
+}
+
+function logDebug(message: string, ...args: any[]) {
+   if (!debugLoggingEnabled) {
+      return;
+   }
+   console.debug(`[mini-lit] ${message}`, ...args);
+}
 
 interface HtmlNode {
    type: "tag" | "text" | string;
@@ -449,9 +463,42 @@ function interpret(nodes: HtmlNode[], values: any[], cleanups: Cleanup[]): Docum
                   parent.appendChild(end);
 
                   const nestedCleanups: Cleanup[] = [];
+                  let textNodeRef: Text | null = null;
+                  let renderMode: "text" | "nodes" | null = null;
 
                   const dispose = effect(() => {
-                     const result = materialize((value as Accessor<any>)());
+                     const accessor = value as Accessor<any>;
+                     const nextValue = accessor();
+                     const isTextLike =
+                        nextValue == null ||
+                        typeof nextValue === "string" ||
+                        typeof nextValue === "number" ||
+                        typeof nextValue === "boolean" ||
+                        typeof nextValue === "bigint";
+
+                     if (isTextLike) {
+                        const textContent = nextValue == null ? "" : String(nextValue);
+
+                        if (renderMode !== "text") {
+                           clearBetweenMarkers(start, end, nestedCleanups);
+                           const node = document.createTextNode(textContent);
+                           end.parentNode?.insertBefore(node, end);
+                           textNodeRef = node;
+                           renderMode = "text";
+                        } else if (textNodeRef) {
+                           textNodeRef.data = textContent;
+                        }
+
+                        return;
+                     }
+
+                     if (renderMode === "text" && textNodeRef) {
+                        textNodeRef.remove();
+                        textNodeRef = null;
+                     }
+                     renderMode = "nodes";
+
+                     const result = materialize(nextValue);
                      clearBetweenMarkers(start, end, nestedCleanups);
                      for (const node of result.nodes) {
                         end.parentNode?.insertBefore(node, end);
@@ -512,13 +559,20 @@ function interpret(nodes: HtmlNode[], values: any[], cleanups: Cleanup[]): Docum
 }
 
 export function html(strings: TemplateStringsArray, ...values: any[]): DocumentFragment {
-   let htmlString = "";
-   for (const part of strings) {
-      htmlString += part + HOLE_MARKER;
-   }
-   htmlString = htmlString.slice(0, -HOLE_MARKER.length);
+   let ast = astCache.get(strings);
 
-   const ast = parse(htmlString) as HtmlNode[];
+   if (!ast) {
+      let htmlString = "";
+      for (const part of strings) {
+         htmlString += part + HOLE_MARKER;
+      }
+      htmlString = htmlString.slice(0, -HOLE_MARKER.length);
+
+      ast = parse(htmlString) as HtmlNode[];
+      logDebug("parsed new template", htmlString);
+      astCache.set(strings, ast);
+   }
+
    const cleanups: Cleanup[] = [];
    const fragment = interpret(ast, values, cleanups);
    setFragmentCleanup(fragment, cleanups);
@@ -655,7 +709,9 @@ export function ref<T = HTMLElement>(): Ref<T> {
 
 ## Demo Page (`example/src/pages/page-next-webcomponent.ts`)
 ```ts
-import { component, defaultProps, effect, html, onCleanup, onMount, ref, signal } from "../next-webcomponent.js";
+import { component, defaultProps, effect, enableMiniLitDebug, html, ref, signal } from "../next-webcomponent.js";
+
+enableMiniLitDebug(true);
 
 const toneTokens = [
    "--primary",
@@ -751,7 +807,7 @@ const DoubleCounter = component("double-counter", () => {
             <div class="text-2xl">→</div>
             <div>
                <p class="text-sm text-muted-foreground">Doubled</p>
-               <p class="text-2xl font-mono text-accent">${() => doubled.value}</p>
+               <p class="text-2xl font-mono text-accent-foreground">${() => doubled.value}</p>
             </div>
          </div>
          <button
@@ -1259,7 +1315,7 @@ const DataVisualizer = component("data-visualizer", (_props, { onMount }) => {
                      step="500"
                      value=${() => updateInterval.value}
                      @input=${(e: Event) => {
-                        updateInterval.value = parseInt((e.target as HTMLInputElement).value);
+                        updateInterval.value = parseInt((e.target as HTMLInputElement).value, 10);
                      }}
                      class="w-full"
                      ?disabled=${() => autoGenerate.value}
@@ -1274,7 +1330,7 @@ const DataVisualizer = component("data-visualizer", (_props, { onMount }) => {
                      max="20"
                      value=${() => maxPoints.value}
                      @input=${(e: Event) => {
-                        maxPoints.value = parseInt((e.target as HTMLInputElement).value);
+                        maxPoints.value = parseInt((e.target as HTMLInputElement).value, 10);
                      }}
                      class="w-full"
                   />
@@ -1382,7 +1438,7 @@ const app = html`
          <!-- Advanced Examples -->
          <section>
             <h2 class="text-2xl font-semibold mb-4">Component Composition</h2>
-            <div class="space-y-4">
+            <div class="grid gap-4">
                ${CounterParent()}
                ${AdvancedTimer({ interval: 1000, format: "time" })}
             </div>
@@ -1391,7 +1447,7 @@ const app = html`
          <!-- Complex Examples -->
          <section>
             <h2 class="text-2xl font-semibold mb-4">Complex State Management</h2>
-            <div class="space-y-4">
+            <div class="grid gap-4">
                ${TodoList()}
                ${DataVisualizer()}
             </div>

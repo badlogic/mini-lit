@@ -1,4 +1,6 @@
-import { component, defaultProps, effect, html, onCleanup, onMount, ref, signal } from "../next-webcomponent.js";
+import { component, defaultProps, effect, enableMiniLitDebug, html, ref, signal } from "../next-webcomponent.js";
+
+enableMiniLitDebug(true);
 
 const toneTokens = [
    "--primary",
@@ -180,51 +182,64 @@ const InputFocus = component("input-focus", (_props, { onMount }) => {
 // =======================================================================================
 // LEVEL 7: Parent-Child Communication
 // =======================================================================================
-interface CounterProps {
+interface SmartCounterProps {
    label?: string;
    tone?: ToneToken;
+   value?: () => number;
    initialValue?: number;
    onChange?: (value: number) => void;
    onReset?: () => void;
 }
 
-const SmartCounter = component<CounterProps>("smart-counter", (props) => {
+const SmartCounter = component<SmartCounterProps>("smart-counter", (props) => {
    const resolved = defaultProps(props, {
       label: "Counter",
       tone: "--primary" as ToneToken,
+      value: () => 0,
       initialValue: 0,
    });
 
-   const count = signal(resolved.initialValue());
+   const isControlled = typeof resolved.onChange === "function";
+   const localValue = signal(resolved.initialValue());
 
-   const updateCount = (newValue: number) => {
-      count.value = newValue;
-      resolved.onChange?.(newValue);
+   const valueAccessor = () => resolved.value();
+   const initialAccessor = () => resolved.initialValue();
+
+   const getValue = (): number => {
+      return isControlled ? valueAccessor() : localValue.value;
+   };
+
+   const updateValue = (newValue: number) => {
+      if (isControlled) {
+         resolved.onChange?.(newValue);
+      } else {
+         localValue.value = newValue;
+      }
    };
 
    return html`
       <div class="p-3 rounded-lg border-2" style=${() => `border-color: var(${resolved.tone()});`}>
          <p class="text-sm font-semibold">${() => resolved.label()}</p>
-         <p class="text-2xl font-mono my-2">${() => count.value}</p>
+         <p class="text-2xl font-mono my-2">${() => getValue()}</p>
          <div class="flex gap-2">
             <button
                class="px-2 py-1 text-sm bg-primary text-primary-foreground rounded"
-               @click=${() => updateCount(count.value + 1)}
+               @click=${() => updateValue(getValue() + 1)}
             >
                +
             </button>
             <button
                class="px-2 py-1 text-sm bg-secondary text-secondary-foreground rounded"
-               @click=${() => updateCount(count.value - 1)}
+               @click=${() => updateValue(getValue() - 1)}
             >
                -
             </button>
             <button
-               class="px-2 py-1 text-sm bg-muted text-muted-foreground rounded"
-               @click=${() => {
-                  updateCount(resolved.initialValue());
-                  resolved.onReset?.();
-               }}
+              class="px-2 py-1 text-sm bg-muted text-muted-foreground rounded"
+              @click=${() => {
+                 updateValue(initialAccessor());
+                 resolved.onReset?.();
+              }}
             >
                Reset
             </button>
@@ -234,35 +249,42 @@ const SmartCounter = component<CounterProps>("smart-counter", (props) => {
 });
 
 const CounterParent = component("counter-parent", () => {
-   const total = signal(0);
+   const counterAValue = signal(0);
+   const counterBValue = signal(10);
    const resetCount = signal(0);
+   const total = () => counterAValue.value + counterBValue.value;
 
    return html`
       <div class="p-4 rounded-lg border bg-card space-y-3">
          <h3 class="text-lg font-semibold">Level 7: Parent-Child Communication</h3>
          <div class="p-3 bg-muted rounded-lg">
-            <p class="text-sm">Total: <span class="font-bold">${() => total.value}</span></p>
+            <p class="text-sm">Total: <span class="font-bold">${() => total()}</span></p>
             <p class="text-sm">Resets: <span class="font-bold">${() => resetCount.value}</span></p>
          </div>
          <div class="grid grid-cols-2 gap-3">
             ${SmartCounter({
                label: "Counter A",
                tone: "--chart-1" as ToneToken,
+               value: () => counterAValue.value,
+               initialValue: 0,
                onChange: (value) => {
-                  total.value = value;
+                  counterAValue.value = value;
                },
                onReset: () => {
+                  counterAValue.value = 0;
                   resetCount.value++;
                },
             })}
             ${SmartCounter({
                label: "Counter B",
                tone: "--chart-2" as ToneToken,
+               value: () => counterBValue.value,
                initialValue: 10,
                onChange: (value) => {
-                  total.value = value;
+                  counterBValue.value = value;
                },
                onReset: () => {
+                  counterBValue.value = 10;
                   resetCount.value++;
                },
             })}
@@ -602,7 +624,7 @@ const DataVisualizer = component("data-visualizer", (_props, { onMount }) => {
                      step="500"
                      value=${() => updateInterval.value}
                      @input=${(e: Event) => {
-                        updateInterval.value = parseInt((e.target as HTMLInputElement).value);
+                        updateInterval.value = parseInt((e.target as HTMLInputElement).value, 10);
                      }}
                      class="w-full"
                      ?disabled=${() => autoGenerate.value}
@@ -617,7 +639,7 @@ const DataVisualizer = component("data-visualizer", (_props, { onMount }) => {
                      max="20"
                      value=${() => maxPoints.value}
                      @input=${(e: Event) => {
-                        maxPoints.value = parseInt((e.target as HTMLInputElement).value);
+                        maxPoints.value = parseInt((e.target as HTMLInputElement).value, 10);
                      }}
                      class="w-full"
                   />
