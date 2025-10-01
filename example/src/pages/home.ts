@@ -88,7 +88,29 @@ export default defineConfig({
                   </div>
 
                   <div>
-                     <h3 class="text-lg font-medium mb-2">3. Configure CSS</h3>
+                     <h3 class="text-lg font-medium mb-2">3. Configure TypeScript (Important!)</h3>
+                     <div class="p-4 mb-4 bg-destructive/10 border border-destructive/20 rounded-md">
+                        <p class="text-sm text-destructive font-medium mb-2">Critical for LitElement Reactivity</p>
+                        <p class="text-sm mb-3">
+                           When using LitElement components with decorators, you <strong>must</strong> set
+                           <code class="px-1 py-0.5 bg-muted rounded">useDefineForClassFields: false</code>
+                           in your tsconfig.json. Without this, reactive properties won't trigger updates properly.
+                        </p>
+                     </div>
+                     <code-block
+                        .code=${`// tsconfig.json
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,        // Required for decorators
+    "useDefineForClassFields": false       // Critical for @state/@property reactivity!
+  }
+}`}
+                        language="json"
+                     ></code-block>
+                  </div>
+
+                  <div>
+                     <h3 class="text-lg font-medium mb-2">4. Configure CSS</h3>
                      <code-block
                         .code=${`/* src/app.css */
 
@@ -105,7 +127,7 @@ export default defineConfig({
                   </div>
 
                   <div>
-                     <h3 class="text-lg font-medium mb-2">4. Use Components</h3>
+                     <h3 class="text-lg font-medium mb-2">5. Use Components</h3>
                      <code-block
                         .code=${`import { html, render } from 'lit'
 import { Button, Card, Badge, icon } from '@mariozechner/mini-lit'

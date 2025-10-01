@@ -68,7 +68,23 @@ npm install -D @tailwindcss/cli
 @import "tailwindcss";
 ```
 
-### 4. Use Components
+### 4. Configure TypeScript (Important for LitElement)
+
+If you're using LitElement components with decorators (custom elements or your own components extending LitElement), you **must** configure TypeScript properly:
+
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false  // Critical for LitElement reactivity!
+  }
+}
+```
+
+**Note:** `useDefineForClassFields: false` is essential for LitElement's `@property()` and `@state()` decorators to work correctly. Without this setting, reactive properties won't trigger updates properly.
+
+### 5. Use Components
 
 ```typescript
 import { html, render } from "lit";
