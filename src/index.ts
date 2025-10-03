@@ -32,6 +32,7 @@ export {
    type VariantDef,
 } from "./component.js";
 export * from "./Dialog.js";
+export * from "./DialogBase.js";
 export * from "./Diff.js";
 export * from "./DownloadButton.js";
 export * from "./FileButton.js";
@@ -59,6 +60,7 @@ export * from "./mini.js";
 export { PreviewCode } from "./PreviewCode.js";
 export * from "./PreviewCodeToggle.js";
 export * from "./Progress.js";
+export { PromptDialog } from "./PromptDialog.js";
 export * from "./Select.js";
 export * from "./Separator.js";
 export * from "./Sidebar.js";

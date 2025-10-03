@@ -23,6 +23,9 @@ export interface MiniLitRequiredMessages {
    "Mode 2": string;
    Required: string;
    Optional: string;
+   "Input Required": string;
+   Cancel: string;
+   Confirm: string;
 }
 
 // Users must extend this interface with their own messages
@@ -46,6 +49,9 @@ export const defaultEnglish: MiniLitRequiredMessages = {
    "Mode 2": "Mode 2",
    Required: "Required",
    Optional: "Optional",
+   "Input Required": "Input Required",
+   Cancel: "Cancel",
+   Confirm: "Confirm",
 };
 
 export const defaultGerman: MiniLitRequiredMessages = {
@@ -63,6 +69,9 @@ export const defaultGerman: MiniLitRequiredMessages = {
    "Mode 2": "Modus 2",
    Required: "Erforderlich",
    Optional: "Optional",
+   "Input Required": "Eingabe erforderlich",
+   Cancel: "Abbrechen",
+   Confirm: "Bestätigen",
 };
 
 // Store for user-provided translations
