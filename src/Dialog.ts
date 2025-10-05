@@ -65,7 +65,7 @@ export const Dialog = fc<DialogProps>(
                <button
                   type="button"
                   @click=${() => onClose?.()}
-                  class="absolute top-4 right-4 rounded-sm text-muted-foreground opacity-70 transition-all hover:opacity-100 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background disabled:pointer-events-none"
+                  class="absolute top-4 right-4 rounded-sm text-muted-foreground opacity-70 transition-all hover:opacity-100 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background disabled:pointer-events-none cursor-pointer"
                   aria-label="${i18n("Close")}"
                >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
