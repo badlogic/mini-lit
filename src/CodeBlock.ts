@@ -66,7 +66,7 @@ export class CodeBlock extends LitElement {
 				<!-- Title bar -->
 				<div class="flex items-center justify-between px-3 py-1">
 					<span class="text-xs text-muted-foreground font-mono">${displayLanguage}</span>
-					<copy-button class="text-muted" .text=${decodedCode} title="${i18n("Copy code")}" .showText=${true}></copy-button>
+					<copy-button class="[&>button]:!bg-transparent [&>button]:hover:!bg-accent" .text=${decodedCode} title="${i18n("Copy code")}" .showText=${true}></copy-button>
 				</div>
 				<!-- Code content -->
 				<div class="overflow-auto max-h-96">

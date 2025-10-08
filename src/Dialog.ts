@@ -9,6 +9,7 @@ export interface DialogProps {
    width?: string;
    height?: string;
    className?: string;
+   backdropClassName?: string;
 }
 
 export interface DialogHeaderProps {
@@ -23,7 +24,15 @@ export interface DialogFooterProps extends BaseComponentProps {}
 
 // Main Dialog container
 export const Dialog = fc<DialogProps>(
-   ({ isOpen, onClose, children, width = "min(600px, 90vw)", height = "auto", className = "" }) => {
+   ({
+      isOpen,
+      onClose,
+      children,
+      width = "min(600px, 90vw)",
+      height = "auto",
+      className = "",
+      backdropClassName = "bg-black/50",
+   }) => {
       if (!isOpen) return html``;
 
       const handleBackdropClick = (e: Event) => {
@@ -52,7 +61,7 @@ export const Dialog = fc<DialogProps>(
 
       return html`
          <!-- Backdrop -->
-         <div class="fixed inset-0 bg-black/50 z-40" @click=${handleBackdropClick}>
+         <div class="fixed inset-0 ${backdropClassName} z-40" @click=${handleBackdropClick}>
             <!-- Modal -->
             <div
                class="fixed z-50 bg-background rounded-lg shadow-xl flex flex-col border border-border ${className}"
