@@ -184,6 +184,31 @@ import "@mariozechner/mini-lit";
 <code-block .code=${"console.log('Hello')"} language="javascript"></code-block>
 ```
 
+## Tree-Shaking & Bundle Optimization
+
+To minimize bundle size, import components directly from their individual files:
+
+```typescript
+// ✅ Optimal - only includes what you use
+import { Button } from "@mariozechner/mini-lit/dist/Button.js";
+import { Card } from "@mariozechner/mini-lit/dist/Card.js";
+import { icon } from "@mariozechner/mini-lit/dist/icons.js";
+import "@mariozechner/mini-lit/dist/ThemeToggle.js";
+
+// ❌ Convenient but larger bundle - includes all components
+import { Button, Card, icon } from "@mariozechner/mini-lit";
+import "@mariozechner/mini-lit";
+```
+
+**Bundle Size Comparison**:
+- Direct imports: ~50-100KB (only what you use)
+- Root index imports: ~400KB+ (all components and dependencies)
+
+**Available component paths**:
+- Functional: `/dist/Button.js`, `/dist/Card.js`, `/dist/Input.js`, etc.
+- Custom elements: `/dist/ThemeToggle.js`, `/dist/CodeBlock.js`, etc.
+- Utilities: `/dist/icons.js`, `/dist/i18n.js`
+
 ## Themes
 
 mini-lit uses shadcn/ui compatible themes with CSS custom properties for colors, borders, and shadows.

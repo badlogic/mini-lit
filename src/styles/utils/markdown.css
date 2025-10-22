@@ -88,7 +88,7 @@
 }
 
 .markdown-content td {
-   @apply p-2 border-b border-r border-border;
+   @apply p-2 text-foreground  border-b border-r border-border;
 }
 
 .markdown-content td:last-child {

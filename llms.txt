@@ -78,6 +78,36 @@ mini-lit provides two component types:
    - `<code-block>`, `<markdown-block>`, `<theme-toggle>`, `<language-selector>`, `<split-panel>`, `<mode-toggle>`, `<preview-code>`
 
 ## Core Components Usage
+## Tree-Shaking & Bundle Optimization
+
+**CRITICAL FOR BUNDLE SIZE**: Always import components directly from their individual files, not from the root index.
+
+### Optimal Imports (Recommended)
+```typescript
+// ✅ Only includes what you use (~50-100KB)
+import { Button } from "@mariozechner/mini-lit/dist/Button.js";
+import { Card } from "@mariozechner/mini-lit/dist/Card.js";
+import { icon } from "@mariozechner/mini-lit/dist/icons.js";
+import "@mariozechner/mini-lit/dist/ThemeToggle.js";
+```
+
+### Root Index Imports (Avoid)
+```typescript
+// ❌ Includes ALL components (~400KB+)
+import { Button, Card, icon } from "@mariozechner/mini-lit";
+import "@mariozechner/mini-lit";
+```
+
+**Bundle Size Comparison**:
+- Direct imports: ~50-100KB (only what you use)
+- Root index imports: ~400KB+ (all components + dependencies)
+
+**Available Paths**:
+- Functional components: `/dist/Button.js`, `/dist/Card.js`, `/dist/Input.js`, etc.
+- Custom elements: `/dist/ThemeToggle.js`, `/dist/CodeBlock.js`, `/dist/MarkdownBlock.js`, etc.
+- Utilities: `/dist/icons.js`, `/dist/i18n.js`, `/dist/mini.js`
+
+
 
 ### Button
 ```typescript
