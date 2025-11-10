@@ -25,7 +25,7 @@
       "build": "tsc",
       "build:example": "cd example && npm run build",
       "dev": "npm install && cd example && npm install && cd .. && concurrently -k -n \"mini-lit,example\" -c \"blue,magenta\" \"npm run dev:tsc\" \"npm run dev:example\"",
-      "dev:tsc": "tsc --watch --preserveWatchOutput",
+      "dev:tsc": "npm install && tsc --watch --preserveWatchOutput",
       "dev:example": "cd example && npm run dev",
       "check": "biome check . --write && tsc --noEmit && cd example && npm run check",
       "prepare": "husky",

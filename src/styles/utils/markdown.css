@@ -25,7 +25,7 @@
 }
 
 .markdown-content p {
-   @apply leading-relaxed mt-4 first:mt-0;
+   @apply leading-relaxed mt-4 first:mt-0 max-w-full;
 }
 
 .markdown-content a {
