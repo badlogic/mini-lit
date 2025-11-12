@@ -88,7 +88,10 @@ If you're using LitElement components with decorators (custom elements or your o
 
 ```typescript
 import { html, render } from "lit";
-import { Button, Card, Badge, icon } from "@mariozechner/mini-lit";
+import { Button } from "@mariozechner/mini-lit/dist/Button.js";
+import { Card } from "@mariozechner/mini-lit/dist/Card.js";
+import { icon } from "@mariozechner/mini-lit/dist/icons.js";
+import "@mariozechner/mini-lit/dist/ThemeToggle.js";
 import { Send } from "lucide";
 import "./app.css";
 
@@ -186,28 +189,34 @@ import "@mariozechner/mini-lit";
 
 ## Tree-Shaking & Bundle Optimization
 
-To minimize bundle size, import components directly from their individual files:
+**IMPORTANT**: The root index (`@mariozechner/mini-lit`) now only exports core utilities (component system, i18n, and icons). Individual components are **not** exported from the root to encourage optimal tree-shaking.
+
+### Recommended Import Strategy
 
 ```typescript
-// ✅ Optimal - only includes what you use
+// ✅ Optimal - only includes what you use (~50-100KB)
 import { Button } from "@mariozechner/mini-lit/dist/Button.js";
 import { Card } from "@mariozechner/mini-lit/dist/Card.js";
 import { icon } from "@mariozechner/mini-lit/dist/icons.js";
 import "@mariozechner/mini-lit/dist/ThemeToggle.js";
 
-// ❌ Convenient but larger bundle - includes all components
-import { Button, Card, icon } from "@mariozechner/mini-lit";
-import "@mariozechner/mini-lit";
+// ⚠️ Root index only exports core utilities (NOT components)
+import { i18n, setTranslations, createComponent } from "@mariozechner/mini-lit";
 ```
 
-**Bundle Size Comparison**:
-- Direct imports: ~50-100KB (only what you use)
-- Root index imports: ~400KB+ (all components and dependencies)
+**What's exported from the root index**:
+- Component system: `ComponentLitBase`, `createComponent`, `defineComponent`, `styleComponent`, and related types
+- i18n system: `i18n`, `setTranslations`, `setLanguage`, `getCurrentLanguage`, `defaultEnglish`, `defaultGerman`
+- Icons: `icon` function and related utilities
 
 **Available component paths**:
-- Functional: `/dist/Button.js`, `/dist/Card.js`, `/dist/Input.js`, etc.
-- Custom elements: `/dist/ThemeToggle.js`, `/dist/CodeBlock.js`, etc.
-- Utilities: `/dist/icons.js`, `/dist/i18n.js`
+- Functional components: `/dist/Button.js`, `/dist/Card.js`, `/dist/Input.js`, `/dist/Select.js`, `/dist/Checkbox.js`, etc.
+- Custom elements: `/dist/ThemeToggle.js`, `/dist/CodeBlock.js`, `/dist/MarkdownBlock.js`, `/dist/LanguageSelector.js`, etc.
+- Core utilities: `/dist/mini.js` (fc, createState, refs)
+
+**Bundle Size**:
+- Direct imports: ~50-100KB (only what you use)
+- Importing all components: ~400KB+ (if you manually import everything)
 
 ## Themes
 
