@@ -1,7 +1,10 @@
-import { Button, icon, Separator } from "@mariozechner/mini-lit";
+import { Button } from "@mariozechner/mini-lit/dist/Button.js";
+import { icon } from "@mariozechner/mini-lit/dist/icons.js";
+import { Separator } from "@mariozechner/mini-lit/dist/Separator.js";
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { ArrowRight, Copy, Download, Edit, Heart, Mail, Save, Settings, Share, Star, Trash2, Upload } from "lucide";
+import "@mariozechner/mini-lit/dist/CodeBlock.js";
 
 @customElement("page-buttons")
 export class ButtonsPage extends LitElement {

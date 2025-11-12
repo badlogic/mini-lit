@@ -1,4 +1,7 @@
-import { Badge, Button, Card, CardContent, CardHeader, CardTitle, icon } from "@mariozechner/mini-lit";
+import { Badge } from "@mariozechner/mini-lit/dist/Badge.js";
+import { Button } from "@mariozechner/mini-lit/dist/Button.js";
+import { Card, CardContent, CardHeader, CardTitle } from "@mariozechner/mini-lit/dist/Card.js";
+import { icon } from "@mariozechner/mini-lit/dist/icons.js";
 import { html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 import {

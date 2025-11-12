@@ -1,4 +1,4 @@
-import { SidebarItem, SidebarSection } from "@mariozechner/mini-lit";
+import { SidebarItem, SidebarSection } from "@mariozechner/mini-lit/dist/Sidebar.js";
 import { Router } from "@vaadin/router";
 import { html } from "lit";
 import "./app.css";

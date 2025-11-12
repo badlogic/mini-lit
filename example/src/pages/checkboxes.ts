@@ -1,5 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle, Checkbox, Label } from "@mariozechner/mini-lit";
-import "@mariozechner/mini-lit/dist/PreviewCode.js";
+import { Card, CardContent, CardHeader, CardTitle } from "@mariozechner/mini-lit/dist/Card.js";
+import { Checkbox } from "@mariozechner/mini-lit/dist/Checkbox.js";
+import { Label } from "@mariozechner/mini-lit/dist/Label.js";
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
 

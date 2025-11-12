@@ -1,7 +1,8 @@
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import "@mariozechner/mini-lit/dist/PreviewCode.js";
-import { Diff, Separator } from "@mariozechner/mini-lit";
+import { Diff } from "@mariozechner/mini-lit/dist/Diff.js";
+import { Separator } from "@mariozechner/mini-lit/dist/Separator.js";
 
 @customElement("page-diff")
 export class DiffPage extends LitElement {

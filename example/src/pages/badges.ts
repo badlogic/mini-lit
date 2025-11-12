@@ -1,7 +1,9 @@
+import { Badge } from "@mariozechner/mini-lit/dist/Badge.js";
+import { Button } from "@mariozechner/mini-lit/dist/Button.js";
+import { icon } from "@mariozechner/mini-lit/dist/icons.js";
+import { Separator } from "@mariozechner/mini-lit/dist/Separator.js";
 import { html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
-import "@mariozechner/mini-lit/dist/PreviewCode.js";
-import { Badge, Button, icon, Separator } from "@mariozechner/mini-lit";
 import { AlertTriangle, Check, Crown, Shield, Star, Tag, Users, X, Zap } from "lucide";
 
 @customElement("page-badges")

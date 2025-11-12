@@ -3,21 +3,18 @@ import { customElement, state } from "lit/decorators.js";
 import "@mariozechner/mini-lit/dist/PreviewCode.js";
 import "@mariozechner/mini-lit/dist/LanguageSelector.js";
 import {
-   Badge,
-   Button,
-   Card,
-   CardContent,
-   CardHeader,
-   CardTitle,
    defaultEnglish,
    defaultGerman,
    getCurrentLanguage,
    i18n,
    type LanguageCode,
    type MiniLitRequiredMessages,
-   Separator,
    setTranslations,
 } from "@mariozechner/mini-lit";
+import { Badge } from "@mariozechner/mini-lit/dist/Badge.js";
+import { Button } from "@mariozechner/mini-lit/dist/Button.js";
+import { Card, CardContent, CardHeader, CardTitle } from "@mariozechner/mini-lit/dist/Card.js";
+import { Separator } from "@mariozechner/mini-lit/dist/Separator.js";
 
 // Extend the i18n interface for this demo
 declare module "@mariozechner/mini-lit" {

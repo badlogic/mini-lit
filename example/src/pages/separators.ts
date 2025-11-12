@@ -1,4 +1,7 @@
-import { Badge, Button, icon, Separator } from "@mariozechner/mini-lit";
+import { Badge } from "@mariozechner/mini-lit/dist/Badge.js";
+import { Button } from "@mariozechner/mini-lit/dist/Button.js";
+import { icon } from "@mariozechner/mini-lit/dist/icons.js";
+import { Separator } from "@mariozechner/mini-lit/dist/Separator.js";
 import { html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 import { Bookmark, Calendar, Clock, Globe, Heart, Mail, MapPin, Phone, Share } from "lucide";

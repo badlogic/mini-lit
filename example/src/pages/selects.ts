@@ -1,7 +1,9 @@
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import "@mariozechner/mini-lit/dist/PreviewCode.js";
-import { icon, Select, type SelectGroup, type SelectOption, Separator } from "@mariozechner/mini-lit";
+import { icon } from "@mariozechner/mini-lit/dist/icons.js";
+import { Select, type SelectGroup, type SelectOption } from "@mariozechner/mini-lit/dist/Select.js";
+import { Separator } from "@mariozechner/mini-lit/dist/Separator.js";
 import { Briefcase, Globe, MapPin, Palette, Phone, Settings, Star, User } from "lucide";
 
 @customElement("page-selects")

@@ -1,7 +1,9 @@
+import { Button } from "@mariozechner/mini-lit/dist/Button.js";
+import { Input } from "@mariozechner/mini-lit/dist/Input.js";
+import { icon } from "@mariozechner/mini-lit/dist/icons.js";
+import { Separator } from "@mariozechner/mini-lit/dist/Separator.js";
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import "@mariozechner/mini-lit/dist/PreviewCode.js";
-import { Button, Input, icon, Separator } from "@mariozechner/mini-lit";
 import { AlertCircle, Check, DollarSign, Eye, EyeOff, Lock, Mail, Phone, Search, User } from "lucide";
 
 @customElement("page-inputs")

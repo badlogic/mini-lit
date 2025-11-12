@@ -1,4 +1,6 @@
-import { icon, Separator, SidebarItem, SidebarSection } from "@mariozechner/mini-lit";
+import { icon } from "@mariozechner/mini-lit/dist/icons.js";
+import { Separator } from "@mariozechner/mini-lit/dist/Separator.js";
+import { SidebarItem, SidebarSection } from "@mariozechner/mini-lit/dist/Sidebar.js";
 import { html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 import { Bell, CreditCard, Home, Package, Settings, ShoppingCart, User } from "lucide";

@@ -1,8 +1,7 @@
+import { Select, type SelectOption } from "@mariozechner/mini-lit/dist/Select.js";
+import { Separator } from "@mariozechner/mini-lit/dist/Separator.js";
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import "@mariozechner/mini-lit/dist/PreviewCode.js";
-import "@mariozechner/mini-lit/dist/CodeBlock.js";
-import { Select, type SelectOption, Separator } from "@mariozechner/mini-lit";
 
 @customElement("page-codeblock")
 export class CodeBlockPage extends LitElement {

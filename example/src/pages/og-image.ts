@@ -1,19 +1,13 @@
-import {
-   Alert,
-   AlertDescription,
-   Badge,
-   Button,
-   Card,
-   CardContent,
-   CardHeader,
-   CardTitle,
-   Input,
-   icon,
-   Label,
-   Progress,
-   Select,
-   Switch,
-} from "@mariozechner/mini-lit";
+import { icon } from "@mariozechner/mini-lit";
+import { Alert, AlertDescription } from "@mariozechner/mini-lit/dist/Alert.js";
+import { Badge } from "@mariozechner/mini-lit/dist/Badge.js";
+import { Button } from "@mariozechner/mini-lit/dist/Button.js";
+import { Card, CardContent, CardHeader, CardTitle } from "@mariozechner/mini-lit/dist/Card.js";
+import { Input } from "@mariozechner/mini-lit/dist/Input.js";
+import { Label } from "@mariozechner/mini-lit/dist/Label.js";
+import { Progress } from "@mariozechner/mini-lit/dist/Progress.js";
+import { Select } from "@mariozechner/mini-lit/dist/Select.js";
+import { Switch } from "@mariozechner/mini-lit/dist/Switch.js";
 import { html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 import { Code, GitBranch, Heart, Package, Palette, Sparkles, Star, Zap } from "lucide";

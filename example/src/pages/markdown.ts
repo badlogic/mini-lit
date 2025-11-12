@@ -1,8 +1,6 @@
+import { Separator } from "@mariozechner/mini-lit/dist/Separator.js";
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import "@mariozechner/mini-lit/dist/PreviewCode.js";
-import "@mariozechner/mini-lit/dist/MarkdownBlock.js";
-import { Separator } from "@mariozechner/mini-lit";
 
 @customElement("page-markdown")
 export class MarkdownPage extends LitElement {

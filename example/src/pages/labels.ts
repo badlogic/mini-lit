@@ -1,7 +1,13 @@
+import { Badge } from "@mariozechner/mini-lit/dist/Badge.js";
+import { Checkbox } from "@mariozechner/mini-lit/dist/Checkbox.js";
+import { Input } from "@mariozechner/mini-lit/dist/Input.js";
+import { icon } from "@mariozechner/mini-lit/dist/icons.js";
+import { Label } from "@mariozechner/mini-lit/dist/Label.js";
+import { Separator } from "@mariozechner/mini-lit/dist/Separator.js";
+import { Switch } from "@mariozechner/mini-lit/dist/Switch.js";
+import { Textarea } from "@mariozechner/mini-lit/dist/Textarea.js";
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import "@mariozechner/mini-lit/dist/PreviewCode.js";
-import { Badge, Checkbox, Input, icon, Label, Separator, Switch, Textarea } from "@mariozechner/mini-lit";
 import { AlertCircle, Asterisk, CheckCircle, HelpCircle, Info, Mail, User } from "lucide";
 
 @customElement("page-labels")

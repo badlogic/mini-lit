@@ -1,4 +1,9 @@
-import { Badge, Input, icon, Label, Separator, Textarea } from "@mariozechner/mini-lit";
+import { Badge } from "@mariozechner/mini-lit/dist/Badge.js";
+import { Input } from "@mariozechner/mini-lit/dist/Input.js";
+import { icon } from "@mariozechner/mini-lit/dist/icons.js";
+import { Label } from "@mariozechner/mini-lit/dist/Label.js";
+import { Separator } from "@mariozechner/mini-lit/dist/Separator.js";
+import { Textarea } from "@mariozechner/mini-lit/dist/Textarea.js";
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { Code, FileText, Key, Mail, Share, Terminal } from "lucide";

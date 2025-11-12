@@ -1,8 +1,9 @@
+import { Card, CardContent } from "@mariozechner/mini-lit/dist/Card.js";
 import type { ComponentDefinition, ExtractProps, VariantDef } from "@mariozechner/mini-lit/dist/component.js";
+import { Input } from "@mariozechner/mini-lit/dist/Input.js";
+import { Label } from "@mariozechner/mini-lit/dist/Label.js";
+import { Select } from "@mariozechner/mini-lit/dist/Select.js";
 import { html, LitElement, render, type TemplateResult } from "lit";
-import "@mariozechner/mini-lit/dist/CodeBlock.js"; // Register code-block
-import "@mariozechner/mini-lit/dist/Checkbox.cva.js"; // Register mini-checkbox
-import { Card, CardContent, Input, Label, Select } from "@mariozechner/mini-lit";
 
 // Type for getVariantProps return value - maps each variant to base props and option-specific props
 type ExtractVariantOptions<T extends ComponentDefinition> = T["variants"] extends infer V

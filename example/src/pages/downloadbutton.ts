@@ -1,4 +1,10 @@
-import { Button, DownloadButton, Input, icon, Label, Separator, Textarea } from "@mariozechner/mini-lit";
+import { Button } from "@mariozechner/mini-lit/dist/Button.js";
+import { DownloadButton } from "@mariozechner/mini-lit/dist/DownloadButton.js";
+import { Input } from "@mariozechner/mini-lit/dist/Input.js";
+import { icon } from "@mariozechner/mini-lit/dist/icons.js";
+import { Label } from "@mariozechner/mini-lit/dist/Label.js";
+import { Separator } from "@mariozechner/mini-lit/dist/Separator.js";
+import { Textarea } from "@mariozechner/mini-lit/dist/Textarea.js";
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { Binary, Code, Download, FileText, Image } from "lucide";

@@ -1,7 +1,10 @@
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import "@mariozechner/mini-lit/dist/PreviewCode.js";
-import { Button, icon, Separator, Textarea } from "@mariozechner/mini-lit";
+import { Button } from "@mariozechner/mini-lit/dist/Button.js";
+import { icon } from "@mariozechner/mini-lit/dist/icons.js";
+import { Separator } from "@mariozechner/mini-lit/dist/Separator.js";
+import { Textarea } from "@mariozechner/mini-lit/dist/Textarea.js";
 import { AlertCircle, Copy, Edit3, FileText, MessageSquare, RefreshCw, Save } from "lucide";
 
 @customElement("page-textareas")
